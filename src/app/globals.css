@@ -725,7 +725,7 @@
 .hero-form-glow {
   pointer-events: none;
   position: absolute;
-  inset: -3px;
+  inset: -2px;
   border-radius: 1.125rem;
   background: conic-gradient(
     from var(--hero-glow-angle),

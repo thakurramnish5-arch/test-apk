@@ -221,6 +221,11 @@
     }
   }
 
+  /* Hide the browser's own "dd/mm/yyyy" while PickerInput shows its hint */
+  .field-input[data-empty]:not(:focus)::-webkit-datetime-edit {
+    color: transparent;
+  }
+
   .field-input-error {
     @apply border-red-400 focus:border-red-500 focus:ring-red-500/20;
   }

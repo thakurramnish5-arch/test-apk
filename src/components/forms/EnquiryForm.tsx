@@ -542,7 +542,8 @@ export function EnquiryForm({
       errorId={errorId("fromDate")}
       required
     >
-      <input
+      <PickerInput
+        placeholder="Select date"
         id={fieldId("fromDate")}
         name="fromDate"
         type="date"
@@ -564,7 +565,8 @@ export function EnquiryForm({
       error={errors.toDate}
       errorId={errorId("toDate")}
     >
-      <input
+      <PickerInput
+        placeholder="Select date"
         id={fieldId("toDate")}
         name="toDate"
         type="date"
@@ -584,7 +586,8 @@ export function EnquiryForm({
       label="Pickup Time"
       icon={<Clock className="h-3.5 w-3.5" aria-hidden="true" />}
     >
-      <input
+      <PickerInput
+        placeholder="Select time"
         id={fieldId("pickupTime")}
         name="pickupTime"
         type="time"
@@ -885,6 +888,36 @@ function FormSection({
       </div>
       {children}
     </section>
+  );
+}
+
+/*
+ * Date and time inputs ignore `placeholder`, so an empty one shows a blank
+ * box on phones. This draws the hint over the input until a value is picked
+ * (or, on desktop, until it is focused for typing).
+ */
+function PickerInput({
+  placeholder,
+  className,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & { placeholder: string }) {
+  const empty = !props.value;
+  return (
+    <div className="relative">
+      <input
+        {...props}
+        data-empty={empty || undefined}
+        className={cn("peer", className)}
+      />
+      {empty && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-base text-charcoal-400 peer-focus:hidden sm:text-sm"
+        >
+          {placeholder}
+        </span>
+      )}
+    </div>
   );
 }
 

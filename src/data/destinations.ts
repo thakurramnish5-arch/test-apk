@@ -8,8 +8,9 @@ import type { Destination } from "@/types";
  * road work and the vehicle. Share the trip and we confirm the details.
  *
  * Images are scenic references. Chamba, Dalhousie, Dharamshala, Manali and
- * Shimla use place-matched photos; Khajjiar, Bharmour, Pathankot and
- * Amritsar reuse generic hill photos from the old list until real ones are added.
+ * Shimla use place-matched photos; Khajjiar, Bharmour and Pathankot reuse
+ * generic hill photos until real ones are added. Photos in /public/destinations
+ * are from Wikimedia Commons and need their credit in photoCredits.ts.
  */
 export const destinations: Destination[] = [
   {
@@ -85,16 +86,81 @@ export const destinations: Destination[] = [
     popularFor: ["Kangra airport (Gaggal)", "Dhauladhar views", "McLeod Ganj"],
   },
   {
+    id: "d-10",
+    name: "Padri Jot",
+    slug: "padri-jot",
+    region: "Salooni–Bhaderwah Road",
+    description:
+      "Wide green meadows on the pass above Langera, on the road to Bhaderwah. A favourite day out in summer; snow closes it in winter.",
+    image: "/destinations/padri-jot-meadows.jpg",
+    driveNote: "Day trip from Salooni",
+    popularFor: ["Meadows", "Summer picnics", "Snow views"],
+  },
+  {
+    id: "d-11",
+    name: "Sach Pass",
+    slug: "sach-pass",
+    region: "Chamba District",
+    description:
+      "The high pass on the road from Chamba to Pangi, with snow walls early in the season. Open only in summer, so we check the road before you go.",
+    image: "/destinations/sach-pass-snow.jpg",
+    driveNote: "Summer trip from Salooni",
+    popularFor: ["Snow walls", "Pangi valley", "Pir Panjal views"],
+  },
+  {
+    id: "d-12",
+    name: "Manimahesh",
+    slug: "manimahesh",
+    region: "Bharmour, Chamba District",
+    description:
+      "The sacred lake below Mount Kailash. We drive you to Hadsar, where the trek starts, and pick you up on your return. Busiest during the yatra.",
+    image: "/destinations/manimahesh.jpg",
+    driveNote: "Yatra trip via Bharmour",
+    popularFor: ["Manimahesh yatra", "Hadsar drop", "Pilgrim groups"],
+  },
+  {
     id: "d-7",
     name: "Amritsar",
     slug: "amritsar",
     region: "Punjab",
     description:
       "For the Golden Temple, family visits or the airport. Best planned as an overnight trip.",
-    image:
-      "https://images.unsplash.com/photo-1677821243506-0fa5cd8abdcb?auto=format&fit=crop&w=1200&q=80",
+    image: "/destinations/amritsar.jpg",
     driveNote: "Overnight trip from Salooni",
     popularFor: ["Golden Temple", "Airport", "Family visits"],
+  },
+  {
+    id: "d-13",
+    name: "Chandigarh",
+    slug: "chandigarh",
+    region: "Punjab & Haryana Capital",
+    description:
+      "For PGI hospital visits, offices, shopping or the airport. The Rock Garden and Sukhna Lake are easy to add.",
+    image: "/destinations/chandigarh-rock-garden.jpg",
+    driveNote: "Overnight trip from Salooni",
+    popularFor: ["PGI hospital", "Airport", "Rock Garden"],
+  },
+  {
+    id: "d-14",
+    name: "Haridwar",
+    slug: "haridwar",
+    region: "Uttarakhand",
+    description:
+      "For Ganga snan, the evening aarti at Har Ki Pauri and family rituals. Rishikesh is close by if you want to add it.",
+    image: "/destinations/haridwar.jpg",
+    driveNote: "Multi-day trip from Salooni",
+    popularFor: ["Har Ki Pauri", "Ganga aarti", "Rishikesh"],
+  },
+  {
+    id: "d-15",
+    name: "Delhi",
+    slug: "delhi",
+    region: "National Capital",
+    description:
+      "Airport and railway station drops, hospital visits or family trips. Plan it with a comfortable vehicle for the long drive.",
+    image: "/destinations/delhi.jpg",
+    driveNote: "Multi-day trip from Salooni",
+    popularFor: ["IGI Airport", "Railway stations", "Hospital visits"],
   },
   {
     id: "d-8",

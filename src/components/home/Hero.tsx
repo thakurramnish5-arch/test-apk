@@ -59,24 +59,60 @@ const birds = [
   { top: "28%", scale: 0.6, duration: 34, delay: 12.7 },
 ];
 
+/**
+ * The hero heading types out, holds, erases and moves to the next line.
+ * The first line is the real heading for search engines and screen readers.
+ */
+const headings = [
+  "Your Trusted Ride in Salooni, Chamba",
+  "Experienced Drivers, Honest Rates",
+  "Safe Journeys on Every Hill Road",
+];
+const TYPE_MS = 55;
+const ERASE_MS = 25;
+const HOLD_MS = 3000;
+
 export function Hero() {
-  const headingText = "Your Trusted Ride in Salooni, Chamba";
+  const headingText = headings[0];
   const [displayText, setDisplayText] = useState("");
 
   useEffect(() => {
-    let index = 0;
+    // Motion-sensitive visitors get the first heading, still.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplayText(headingText);
+      return;
+    }
 
-    const timer = setInterval(() => {
-      setDisplayText(headingText.slice(0, index + 1));
-      index++;
+    let line = 0;
+    let length = 0;
+    let erasing = false;
+    let timer: ReturnType<typeof setTimeout>;
 
-      if (index >= headingText.length) {
-        clearInterval(timer);
+    const step = () => {
+      const text = headings[line];
+      if (!erasing) {
+        length++;
+        setDisplayText(text.slice(0, length));
+        if (length === text.length) {
+          erasing = true;
+          timer = setTimeout(step, HOLD_MS);
+          return;
+        }
+        timer = setTimeout(step, TYPE_MS);
+      } else {
+        length--;
+        setDisplayText(text.slice(0, length));
+        if (length === 0) {
+          erasing = false;
+          line = (line + 1) % headings.length;
+        }
+        timer = setTimeout(step, length === 0 ? 400 : ERASE_MS);
       }
-    }, 55);
+    };
 
-    return () => clearInterval(timer);
-  }, []);
+    timer = setTimeout(step, TYPE_MS);
+    return () => clearTimeout(timer);
+  }, [headingText]);
 
   return (
     <section className="relative isolate overflow-hidden bg-charcoal-950">

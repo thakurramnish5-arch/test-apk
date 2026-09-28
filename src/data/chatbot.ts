@@ -228,7 +228,7 @@ export const chatTopics: ChatTopic[] = [
       "village", "gaon", "tehsil", "jagah",
     ],
     answer:
-      "We serve Salooni tehsil and nearby areas, including Kihar and Bhandal valley. Trips start from Salooni and go to Chamba, Dalhousie, Khajjiar, Banikhet, Bharmour, Dharamshala, Pathankot, Amritsar, Jammu, Chandigarh, Delhi and longer trips like Manali or Shimla. See the Destinations page for more.",
+      "We serve Salooni tehsil and nearby areas, including Kihar and Bhandal valley. Trips start from Salooni and go to Chamba, Dalhousie, Khajjiar, Banikhet, Bharmour, Manimahesh, Padri Jot, Sach Pass, Dharamshala, Pathankot, Amritsar, Jammu, Chandigarh, Haridwar, Delhi and longer trips like Manali or Shimla. See the Destinations page for more.",
     related: ["Can I book a drop to Pathankot station?", "What vehicles can I book?"],
   },
   {

@@ -1,5 +1,5 @@
 /**
- * Photo credits for the vehicle images in /public/vehicles.
+ * Photo credits for the images in /public/vehicles and /public/destinations.
  * ---------------------------------------------------------------
  * These are Wikimedia Commons photos, used under the licence listed
  * against each one. Number plates (and any painted phone numbers)
@@ -143,5 +143,31 @@ export const photoCredits: Record<string, PhotoCredit> = {
     author: "Timothy A. Gonsalves",
     license: "CC BY-SA 4.0",
     source: "https://commons.wikimedia.org/wiki/File:Road_Work_Zanskar_Sumdo_Lahaul_Oct20_D72_18188.jpg",
+  },
+  // Destination photos (resized). Padri Jot and Sach Pass are our own photos, so no credit.
+  "/destinations/amritsar.jpg": {
+    author: "Bernard Gagnon",
+    license: "CC BY-SA 4.0",
+    source: "https://commons.wikimedia.org/wiki/File:Golden_Temple,_Amritsar_01.jpg",
+  },
+  "/destinations/manimahesh.jpg": {
+    author: "NaturenHuman",
+    license: "CC BY-SA 4.0",
+    source: "https://commons.wikimedia.org/wiki/File:Mt._Kailash_Manimahesh_Lake.jpg",
+  },
+  "/destinations/chandigarh-rock-garden.jpg": {
+    author: "thoughtsillustrated.blogspot.com",
+    license: "CC BY-SA 3.0",
+    source: "https://commons.wikimedia.org/wiki/File:Rock_Garden_of_Chandigarh_-_bangle_sculptures.JPG",
+  },
+  "/destinations/haridwar.jpg": {
+    author: "आशीष भटनागर",
+    license: "CC BY-SA 3.0",
+    source: "https://commons.wikimedia.org/wiki/File:Har_ki_Pauri,_Haridwar_2.jpg",
+  },
+  "/destinations/delhi.jpg": {
+    author: "Nikhilb239",
+    license: "CC BY-SA 4.0",
+    source: "https://commons.wikimedia.org/wiki/File:India_Gate,_New_Delhi_from_West.jpg",
   },
 };

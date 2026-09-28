@@ -5,6 +5,7 @@ import { ContactSection } from "@/components/shared/ContactSection";
 import { Reveal } from "@/components/ui/Reveal";
 import { LinkButton } from "@/components/ui/Button";
 import { destinations } from "@/data/destinations";
+import { photoCredits } from "@/data/photoCredits";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 const pageTitle = "Trips and Destinations From Salooni";
@@ -75,6 +76,31 @@ export default function DestinationsPage() {
               </LinkButton>
             </div>
           </div>
+
+          {/* Commons licences require these credits; kept off the photos */}
+          <p className="mt-6 text-center text-[11px] leading-relaxed text-charcoal-400">
+            Photo credits (via Wikimedia Commons):{" "}
+            {destinations
+              .filter((destination) => photoCredits[destination.image])
+              .map((destination, index) => {
+                const credit = photoCredits[destination.image];
+                return (
+                  <span key={destination.id}>
+                    {index > 0 && " · "}
+                    {destination.name} —{" "}
+                    <a
+                      href={credit.source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline-offset-2 hover:underline"
+                    >
+                      {credit.author}
+                    </a>
+                    , {credit.license}
+                  </span>
+                );
+              })}
+          </p>
         </div>
       </section>
 

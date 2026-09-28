@@ -765,15 +765,15 @@ export function EnquiryForm({
           Vehicle type comes first — it is the one thing that decides which
           vehicle we look for. The rest is the journey and how to reach you.
         */}
-        <div className="grid gap-3 @[23rem]/form:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3">
           {/* Vehicle type spans the row unless passengers sits beside it */}
-          <div className={cn(!asksPassengers && "@[23rem]/form:col-span-2")}>
+          <div className={cn("min-w-0", !asksPassengers && "col-span-2")}>
             {vehicleField}
           </div>
           {passengersField}
           {pickupField}
           {dropField}
-          <div className="@[23rem]/form:col-span-2">{tripTypeField}</div>
+          <div className="col-span-2">{tripTypeField}</div>
           {fromDateField}
           {toDateField}
         </div>
@@ -906,7 +906,9 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    // min-w-0 lets the field shrink inside a grid column — iOS date inputs
+    // otherwise push past it
+    <div className="min-w-0">
       <label htmlFor={id} className="field-label">
         <span className="inline-flex items-center gap-1.5">
           {icon}

@@ -9,10 +9,10 @@
  *  - Statistics ................ siteConfig.stats
  *
  * Phone, WhatsApp, email and address come from environment variables
- * (NEXT_PUBLIC_* in .env.local — see .env.example), so they change in one
- * place for the whole site. On a host like Vercel, set the same variables
- * in the project settings. The build fails loudly if a required one is
- * missing, rather than shipping a site with no phone number.
+ * (NEXT_PUBLIC_* in .env), so they change in one place for the whole site.
+ * .env is committed, so Vercel builds get the same values. The build fails
+ * loudly if a required one is missing, rather than shipping a site with no
+ * phone number.
  */
 
 /**
@@ -23,7 +23,7 @@ function requireEnv(value: string | undefined, name: string): string {
   const trimmed = value?.trim();
   if (!trimmed) {
     throw new Error(
-      `Missing environment variable ${name}. Add it to .env.local (see .env.example).`,
+      `Missing environment variable ${name}. Add it to .env.`,
     );
   }
   return trimmed;
@@ -76,7 +76,7 @@ export const siteConfig = {
     /** Shown in the contact section. Avoid claiming 24/7 unless true. */
     availabilityNote: "Quick booking assistance",
     /**
-     * Set from NEXT_PUBLIC_ADDRESS_* in .env.local.
+     * Set from NEXT_PUBLIC_ADDRESS_* in .env.
      * `postalCode` is published to Google in the LocalBusiness schema
      * (src/lib/seo.ts), and a wrong or invented address can get a Google
      * Business listing suspended — leave it empty rather than guessing.

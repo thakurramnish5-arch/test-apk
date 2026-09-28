@@ -98,13 +98,13 @@ src/
 
 ## Configuration
 
-Contact details live in **`.env.local`** (copy `.env.example` to start).
+Contact details live in **`.env`**.
 Everything else about the business (name, social links, stats) lives in
 **`src/config/site.ts`**.
 
 ### Change the phone, WhatsApp, email or address
 
-Edit `.env.local`, then restart `npm run dev` (or redeploy):
+Edit `.env`, then restart `npm run dev` (or push to redeploy):
 
 ```bash
 NEXT_PUBLIC_PHONE_NUMBER=+918219769045    # call number, with country code
@@ -258,14 +258,17 @@ Please share availability and quotation.
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local`. Only one variable matters today:
+All variables live in `.env`, which is committed so Vercel builds get the
+same values. Only put public values there — secrets go in Vercel's
+Environment Variables settings. Apart from the contact details above, one
+variable matters today:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://your-domain.in
 ```
 
 It is used for canonical URLs, the sitemap and Open Graph metadata. The
-remaining entries in `.env.example` are commented-out placeholders for future
+commented-out entries at the bottom of `.env` are placeholders for future
 backend work (database, WhatsApp Business API, email, auth, payments) — nothing
 in the current site requires them.
 

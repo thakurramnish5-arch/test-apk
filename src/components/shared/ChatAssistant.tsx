@@ -30,7 +30,7 @@ const GREETING =
   "Hello! 👋 What would you like to book? Pick an option below, or just type your question.";
 
 const MENU_AGAIN =
-  "Sure — what do you need? Pick one below, or type your question.";
+  "Hey! 👋 How are you? How can I help you today? Pick an option below, or type your question.";
 
 const FALLBACK =
   "I do not have an answer for that one. Our booking team can help you directly — they also confirm prices and availability, which I cannot.";

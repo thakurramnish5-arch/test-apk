@@ -53,7 +53,11 @@ const greetings = [
   "namaste", "namaskar", "hola", "salaam", "salam",
   "good morning", "good afternoon", "good evening", "gm", "gud morning",
   "start", "menu", "help", "madad", "kaise ho", "hlo",
+  "hy", "hlw", "hey there", "hi there", "hello there",
 ];
+
+/** Catches stretched spellings like "hiii", "heyyy", "hellooo", "hloo". */
+const greetingWord = /^(h+[iy]+|h+e+y+|h+e+l+o+w*|h+l+o+|h+l+w+)$/;
 
 export function isGreeting(input: string): boolean {
   const text = input.toLowerCase().replace(/[^a-z0-9\s]/g, " ").trim();
@@ -62,7 +66,10 @@ export function isGreeting(input: string): boolean {
   // so "hi, do you have a JCB" still gets a real answer.
   const words = text.split(/\s+/);
   if (words.length > 3) return false;
-  return greetings.some((g) => text === g || text.startsWith(g + " "));
+  return (
+    greetingWord.test(words[0]) ||
+    greetings.some((g) => text === g || text.startsWith(g + " "))
+  );
 }
 
 /**

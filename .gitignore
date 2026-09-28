@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# public, non-secret values used by the Vercel build
+!.env.example
+!.env.production
 
 # vercel
 .vercel

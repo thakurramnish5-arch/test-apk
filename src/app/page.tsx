@@ -1,6 +1,5 @@
 import { Hero } from "@/components/home/Hero";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
-import { FeaturedFleet } from "@/components/home/FeaturedFleet";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { HappyCustomers } from "@/components/home/HappyCustomers";

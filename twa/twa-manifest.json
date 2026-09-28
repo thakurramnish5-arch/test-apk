@@ -1,6 +1,6 @@
 {
   "packageId": "in.saloonitransporthub.app",
-  "host": "saloonitransporthub.in",
+  "host": "saloonitransporthub.vercel.app",
   "name": "Salooni Transport Hub",
   "launcherName": "Salooni Transport",
   "display": "standalone",
@@ -13,8 +13,8 @@
   "backgroundColor": "#FFFFFF",
   "enableNotifications": false,
   "startUrl": "/",
-  "iconUrl": "https://saloonitransporthub.in/icon-512.png",
-  "maskableIconUrl": "https://saloonitransporthub.in/icon-maskable-512.png",
+  "iconUrl": "https://saloonitransporthub.vercel.app/icon-512.png",
+  "maskableIconUrl": "https://saloonitransporthub.vercel.app/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./android.keystore",
@@ -24,7 +24,7 @@
   "appVersionCode": 1,
   "shortcuts": [],
   "generatorApp": "unknown",
-  "webManifestUrl": "https://saloonitransporthub.in/manifest.webmanifest",
+  "webManifestUrl": "https://saloonitransporthub.vercel.app/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -33,7 +33,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://saloonitransporthub.in/",
+  "fullScopeUrl": "https://saloonitransporthub.vercel.app/",
   "minSdkVersion": 21,
   "orientation": "default",
   "fingerprints": [],

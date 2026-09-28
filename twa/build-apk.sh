@@ -28,7 +28,13 @@ rm -f "$ALIGNED"
 
 echo "==> Signing (enter the keystore password from twa/keystore.env)"
 mkdir -p "$(dirname "$OUT")"
-"$BUILD_TOOLS/apksigner" sign --ks android.keystore --ks-key-alias salooni --out "$OUT" "$ALIGNED"
+# Reads the password from twa/keystore.env when present, else prompts
+PASS_ARGS=()
+if [ -f keystore.env ]; then
+  set -a; . ./keystore.env; set +a
+  PASS_ARGS=(--ks-pass env:KEYSTORE_PASSWORD)
+fi
+"$BUILD_TOOLS/apksigner" sign --ks android.keystore --ks-key-alias salooni "${PASS_ARGS[@]}" --out "$OUT" "$ALIGNED"
 rm -f "$ALIGNED" "$OUT.idsig"
 
 "$BUILD_TOOLS/apksigner" verify --print-certs "$OUT" | grep -i "SHA-256"

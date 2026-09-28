@@ -16,6 +16,7 @@ import {
   Users,
 } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 import {
   passengerVehicleTypeOptions,
   vehicleTypeOptions,
@@ -85,7 +86,7 @@ interface EnquiryFormProps {
    * A trip to a destination is never a JCB, tractor or truck job.
    */
   passengerOnly?: boolean;
-  /** Names a specific vehicle in the WhatsApp message. */
+  /** Names a specific vehicle in the enquiry. */
   vehicleName?: string;
   className?: string;
   /** Renders on a dark background (hero overlay). */
@@ -138,13 +139,10 @@ export function EnquiryForm({
   const [errors, setErrors] = useState<EnquiryErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [submitted, setSubmitted] = useState<EnquiryDetails | null>(null);
-  const [isAdvance, setIsAdvance] = useState(false);
-  /**
-   * Whether the WhatsApp tab actually opened. The enquiry is only delivered
-   * when it did — there is no backend — so the confirmation copy must not
-   * claim receipt until we know the handover happened.
-   */
-  const [whatsappOpened, setWhatsappOpened] = useState(false);
+  /** Set when the email could not be sent, so the visitor can use WhatsApp. */
+  const [sendFailed, setSendFailed] = useState(false);
+  /** Hidden honeypot field — only bots fill it in. */
+  const [website, setWebsite] = useState("");
 
   const fieldId = (name: string) => `${uid}-${name}`;
   const errorId = (name: string) => `${uid}-${name}-error`;
@@ -167,11 +165,12 @@ export function EnquiryForm({
     });
   };
 
-  const handleSubmit = (advanceBooking: boolean) => {
+  const handleSubmit = async (advanceBooking: boolean) => {
+    if (status === "submitting") return;
     const payload: EnquiryDetails = {
       ...values,
       // The hero widget does not show these, so never send stale values.
-      ...(isCompact && { name: "", phone: "", pickupTime: "" }),
+      ...(isCompact && { pickupTime: "" }),
       ...(!asksPassengers && { passengers: "" }),
       vehicleName,
       isAdvanceBooking: advanceBooking,
@@ -181,10 +180,10 @@ export function EnquiryForm({
     // journey and contact details, the full form additionally for vehicle
     // type and purpose.
     const validationErrors = validateEnquiry(payload, {
-      // The hero widget skips name and mobile number — the enquiry arrives
-      // on WhatsApp, which already shows who sent it.
-      requireContact: !isCompact,
-      requirePhone: !isCompact,
+      // The enquiry arrives by email, so every form needs a name and number
+      // for the driver to call back on.
+      requireContact: true,
+      requirePhone: true,
       requirePickup: true,
       requireFromDate: true,
       // Every surface now shows the vehicle type field, so all of them
@@ -203,31 +202,31 @@ export function EnquiryForm({
     }
 
     setErrors({});
-    setIsAdvance(advanceBooking);
+    setSendFailed(false);
+    setStatus("submitting");
 
-    /**
-     * The enquiry completes over WhatsApp. When a backend is added, POST the
-     * payload to /api/enquiry here — the shape of `payload` already matches
-     * EnquiryDetails.
-     *
-     * WhatsApp must open synchronously inside the click: any await before
-     * window.open makes mobile Safari treat it as an unrequested popup and
-     * block it. "noopener" is not passed as a feature because it makes
-     * window.open return null even on success; the opener is cut by hand.
-     */
-    const url = buildEnquiryWhatsAppUrl(payload);
-    const tab = window.open(url, "_blank");
-    if (tab) {
-      tab.opener = null;
-    } else {
-      // Popup blocked — send the visitor to WhatsApp in this tab instead,
-      // so the enquiry still goes out.
-      window.location.href = url;
+    try {
+      const response = await fetch("/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...payload, website }),
+      });
+      if (!response.ok) throw new Error(`Enquiry failed: ${response.status}`);
+    } catch {
+      setSubmitted(payload);
+      setSendFailed(true);
+      setStatus("idle");
+      return;
     }
 
     setSubmitted(payload);
-    setWhatsappOpened(true);
     setStatus("success");
+    // The form starts fresh behind the confirmation, ready for another one.
+    setValues({
+      ...emptyValues,
+      vehicleType: initialVehicleType,
+      dropLocation: defaultDropLocation,
+    });
   };
 
   const resetForm = () => {
@@ -237,106 +236,59 @@ export function EnquiryForm({
       dropLocation: defaultDropLocation,
     });
     setSubmitted(null);
-    setWhatsappOpened(false);
+    setSendFailed(false);
     setStatus("idle");
     setErrors({});
   };
 
   // ---------------------------------------------------------- success state
-  if (status === "success" && submitted) {
-    return (
-      <div
-        className={cn(
-          "bg-white text-center",
-          isModal
-            ? "py-2"
-            : "rounded-2xl border border-forest-200 p-6 shadow-lg sm:p-8",
-          className,
-        )}
-        role="status"
-        aria-live="polite"
-      >
-        <span
-          className={cn(
-            "mx-auto flex h-14 w-14 items-center justify-center rounded-full",
-            whatsappOpened ? "bg-forest-50" : "bg-amber-50",
-          )}
-        >
-          {whatsappOpened ? (
-            <CheckCircle2
-              className="h-7 w-7 text-forest-600"
-              aria-hidden="true"
-            />
-          ) : (
-            <AlertCircle
-              className="h-7 w-7 text-amber-600"
-              aria-hidden="true"
-            />
-          )}
-        </span>
+  const successContent = submitted && (
+    <div className="py-4 text-center" role="status" aria-live="polite">
+      <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-forest-50 ring-8 ring-forest-50/50">
+        <CheckCircle2 className="h-9 w-9 text-forest-600" aria-hidden="true" />
+      </span>
+      <h3 className="mt-5 font-display text-xl font-bold text-charcoal-900">
+        Thank you, {submitted.name.split(" ")[0]}!
+      </h3>
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-charcoal-600">
+        Your {submitted.isAdvanceBooking ? "advance booking" : "enquiry"} has
+        reached our team. A driver will call you shortly on{" "}
+        <strong className="font-semibold text-charcoal-800">
+          +91 {submitted.phone}
+        </strong>{" "}
+        with availability and the rate.
+      </p>
+      <p className="mt-3 text-xs text-charcoal-500">
+        Need it urgently? Call us right away.
+      </p>
 
-        {whatsappOpened ? (
-          <>
-            <h3 className="mt-4 text-xl font-bold text-charcoal-900">
-              Almost done — send it on WhatsApp
-            </h3>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-charcoal-600">
-              Your details are ready in the WhatsApp tab that just opened.
-              <strong className="font-semibold text-charcoal-800">
-                {" "}
-                Press send there
-              </strong>{" "}
-              so our booking team receives them, and we will reply with
-              availability and a quotation.
-            </p>
-            <p className="mt-3 text-xs text-charcoal-500">
-              If that tab did not appear, use the button below.
-            </p>
-          </>
-        ) : (
-          <>
-            <h3 className="mt-4 text-xl font-bold text-charcoal-900">
-              One more step to send your enquiry
-            </h3>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-charcoal-600">
-              Your browser blocked the WhatsApp window, so your enquiry has{" "}
-              <strong className="font-semibold text-charcoal-800">
-                not reached us yet
-              </strong>
-              . Use a button below to send it — your details are saved and
-              ready.
-            </p>
-          </>
-        )}
-
-        <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
-          <LinkButton
-            href={buildEnquiryWhatsAppUrl({
-              ...submitted,
-              isAdvanceBooking: isAdvance,
-            })}
-            variant="whatsapp"
-            external
-          >
-            <MessageCircle className="h-4 w-4" aria-hidden="true" />
-            Continue on WhatsApp
-          </LinkButton>
-          <LinkButton href={telHref} variant="outline">
-            <Phone className="h-4 w-4" aria-hidden="true" />
-            Call Now
-          </LinkButton>
-        </div>
-
-        <button
-          type="button"
-          onClick={resetForm}
-          className="mt-5 text-sm font-semibold text-forest-700 underline-offset-4 hover:underline"
-        >
-          Send another enquiry
-        </button>
+      <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
+        <Button onClick={resetForm} size="lg">
+          Done
+        </Button>
+        <LinkButton href={telHref} variant="outline" size="lg">
+          <Phone className="h-4 w-4" aria-hidden="true" />
+          Call Now
+        </LinkButton>
       </div>
-    );
+    </div>
+  );
+
+  // Inside a dialog the confirmation replaces the form; everywhere else it
+  // pops up over the page.
+  if (isModal && status === "success") {
+    return <div className={className}>{successContent}</div>;
   }
+
+  const successDialog = (
+    <Modal
+      open={status === "success"}
+      onClose={resetForm}
+      title="Enquiry submitted"
+    >
+      {successContent}
+    </Modal>
+  );
 
   const isSubmitting = status === "submitting";
   const hasErrors = Object.keys(errors).length > 0;
@@ -672,6 +624,49 @@ export function EnquiryForm({
     </Field>
   );
 
+  const honeypot = (
+    <input
+      type="text"
+      name="website"
+      value={website}
+      onChange={(e) => setWebsite(e.target.value)}
+      tabIndex={-1}
+      autoComplete="off"
+      aria-hidden="true"
+      className="absolute -left-[9999px] h-0 w-0 opacity-0"
+    />
+  );
+
+  const sendError = sendFailed && submitted && (
+    <div
+      className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-800"
+      role="alert"
+    >
+      <p className="flex items-start gap-2 font-medium">
+        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <span>
+          Your enquiry could not be sent right now. Please try again, or send
+          it to us on WhatsApp or by phone.
+        </span>
+      </p>
+      <div className="mt-2.5 flex gap-2">
+        <LinkButton
+          href={buildEnquiryWhatsAppUrl(submitted)}
+          variant="whatsapp"
+          size="sm"
+          external
+        >
+          <MessageCircle className="h-4 w-4" aria-hidden="true" />
+          WhatsApp
+        </LinkButton>
+        <LinkButton href={telHref} variant="outline" size="sm">
+          <Phone className="h-4 w-4" aria-hidden="true" />
+          Call
+        </LinkButton>
+      </div>
+    </div>
+  );
+
   const errorSummary = hasErrors && (
     <div
       className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-medium text-red-700"
@@ -757,8 +752,8 @@ export function EnquiryForm({
                 Bookings Open — What Do You Need?
               </h2>
               <p className="mt-0.5 text-xs text-charcoal-500">
-                Car, bus, truck, tractor or JCB — fill this in and get the rate
-                on WhatsApp.
+                Car, bus, truck, tractor or JCB — fill this in and a driver
+                calls you back with the rate.
               </p>
             </div>
           </div>
@@ -768,7 +763,10 @@ export function EnquiryForm({
           Vehicle type comes first — it is the one thing that decides which
           vehicle we look for. The rest is the journey and how to reach you.
         */}
+        {honeypot}
         <div className="grid grid-cols-2 gap-3">
+          {nameField}
+          {phoneField}
           {/* Vehicle type spans the row unless passengers sits beside it */}
           <div className={cn("min-w-0", !asksPassengers && "col-span-2")}>
             {vehicleField}
@@ -783,8 +781,10 @@ export function EnquiryForm({
 
         <div className="mt-4 space-y-3">
           {errorSummary}
+          {sendError}
           {actions}
         </div>
+        {successDialog}
       </form>
     );
   }
@@ -807,6 +807,7 @@ export function EnquiryForm({
       )}
       aria-label="Vehicle booking enquiry form"
     >
+      {honeypot}
       <fieldset disabled={isSubmitting} className="space-y-7">
         <FormSection
           step="01"
@@ -852,12 +853,14 @@ export function EnquiryForm({
 
       <div className="mt-4 space-y-3">
         {errorSummary}
+        {sendError}
         {actions}
         <p className="text-center text-xs text-charcoal-500">
-          Your details are sent to our booking team on WhatsApp. No payment is
-          taken at this stage.
+          Your details go straight to our booking team and a driver calls you
+          back. No payment is taken at this stage.
         </p>
       </div>
+      {!isModal && successDialog}
     </form>
   );
 }

@@ -344,15 +344,22 @@ export function EnquiryForm({
           value={values.phone}
           // Digits only, 10 at most. A pasted "+91 98765-43210" or
           // "098765 43210" is trimmed down to the 10-digit number.
-          onChange={(e) =>
-            update(
-              "phone",
-              e.target.value
-                .replace(/\D/g, "")
-                .replace(/^(?:91|0)(?=\d{10}$)/, "")
-                .slice(0, 10),
-            )
-          }
+          // Indian mobiles start with 6-9, so any other first digit is
+          // refused as it is typed, with the reason shown straight away.
+          onChange={(e) => {
+            const phone = e.target.value
+              .replace(/\D/g, "")
+              .replace(/^(?:91|0)(?=\d{10}$)/, "")
+              .slice(0, 10);
+            if (/^[0-5]/.test(phone)) {
+              setErrors((prev) => ({
+                ...prev,
+                phone: "Mobile number must start with 6, 7, 8 or 9.",
+              }));
+              return;
+            }
+            update("phone", phone);
+          }}
           className={cn(
             "field-input pl-14",
             errors.phone && "field-input-error",
@@ -698,7 +705,7 @@ export function EnquiryForm({
           <>
             <Send className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span className="truncate">
-              <span className="@[27rem]/form:hidden">Enquire</span>
+              <span className="@[27rem]/form:hidden">Enquire Now</span>
               <span className="hidden @[27rem]/form:inline">
                 Start an Enquiry
               </span>
@@ -709,14 +716,14 @@ export function EnquiryForm({
       <Button
         onClick={() => handleSubmit(true)}
         disabled={isSubmitting}
-        variant="outline"
+        variant="soft"
         size="lg"
         fullWidth
         className="min-w-0 flex-1 basis-0 px-3"
       >
         <CalendarCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
         <span className="truncate">
-          <span className="@[27rem]/form:hidden">Advance</span>
+          <span className="@[27rem]/form:hidden">Book Advance</span>
           <span className="hidden @[27rem]/form:inline">Book in Advance</span>
         </span>
       </Button>

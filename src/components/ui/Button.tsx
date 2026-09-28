@@ -8,32 +8,36 @@ type Variant =
   | "accent"
   | "whatsapp"
   | "outline"
+  | "soft"
   | "ghost"
   | "light";
 
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-lg border border-transparent font-semibold transition-all duration-200 " +
+  "inline-flex items-center justify-center gap-2 rounded-lg border font-semibold transition-all duration-200 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-60 " +
   "active:translate-y-px whitespace-nowrap";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-forest-700 text-white shadow-sm hover:bg-forest-800 hover:shadow-md focus-visible:outline-forest-700",
+    "border-transparent bg-forest-700 text-white shadow-sm hover:bg-forest-800 hover:shadow-md focus-visible:outline-forest-700",
   secondary:
-    "bg-himalaya-700 text-white shadow-sm hover:bg-himalaya-800 hover:shadow-md focus-visible:outline-himalaya-700",
+    "border-transparent bg-himalaya-700 text-white shadow-sm hover:bg-himalaya-800 hover:shadow-md focus-visible:outline-himalaya-700",
   accent:
-    "bg-accent-700 text-white shadow-sm hover:bg-accent-800 hover:shadow-md focus-visible:outline-accent-700",
+    "border-transparent bg-accent-700 text-white shadow-sm hover:bg-accent-800 hover:shadow-md focus-visible:outline-accent-700",
   whatsapp:
-    "bg-whatsapp text-white shadow-sm hover:bg-whatsapp-dark hover:shadow-md focus-visible:outline-whatsapp-dark",
+    "border-transparent bg-whatsapp text-white shadow-sm hover:bg-whatsapp-dark hover:shadow-md focus-visible:outline-whatsapp-dark",
   outline:
-    "border border-charcoal-300 bg-white text-charcoal-800 hover:border-forest-400 hover:bg-forest-50 hover:text-forest-800 focus-visible:outline-forest-600",
+    "border-charcoal-300 bg-white text-charcoal-800 hover:border-forest-400 hover:bg-forest-50 hover:text-forest-800 focus-visible:outline-forest-600",
+  /** A clear second choice beside a primary button */
+  soft:
+    "border-forest-600 bg-forest-50 text-forest-800 hover:bg-forest-100 focus-visible:outline-forest-600",
   ghost:
-    "text-charcoal-700 hover:bg-charcoal-100 hover:text-charcoal-900 focus-visible:outline-forest-600",
+    "border-transparent text-charcoal-700 hover:bg-charcoal-100 hover:text-charcoal-900 focus-visible:outline-forest-600",
   /** For use over dark imagery */
   light:
-    "border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 focus-visible:outline-white",
+    "border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 focus-visible:outline-white",
 };
 
 const sizes: Record<Size, string> = {

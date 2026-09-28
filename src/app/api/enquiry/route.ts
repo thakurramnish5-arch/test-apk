@@ -52,62 +52,138 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
-/** Label/value rows for the email, skipping anything left empty. */
-function enquiryRows(d: EnquiryDetails): [string, string][] {
+/** Label/value rows for the trip section, skipping anything left empty. */
+function tripRows(d: EnquiryDetails): [string, string][] {
   const rows: [string, string | undefined][] = [
-    ["Name", d.name],
-    ["Mobile", d.phone && `+91 ${d.phone}`],
     ["Vehicle", d.vehicleName],
-    ["Vehicle Type", d.vehicleType],
+    ["Vehicle type", d.vehicleType],
     ["Passengers", d.passengers],
     ["Pickup", d.pickupLocation],
     ["Drop", d.dropLocation],
     ["Trip", d.tripType],
-    ["From", formatDate(d.fromDate)],
-    ["To", formatDate(d.toDate)],
-    ["Pickup Time", formatTime(d.pickupTime)],
+    ["From date", formatDate(d.fromDate)],
+    [d.tripType === "Round Trip" ? "Return date" : "To date", formatDate(d.toDate)],
+    ["Pickup time", formatTime(d.pickupTime)],
     ["Purpose", d.purpose],
-    ["Message", d.message],
   ];
   return rows.filter((row): row is [string, string] => Boolean(row[1]));
 }
 
+/** A button that renders in Gmail, Outlook and phone mail apps alike. */
+function emailButton(href: string, label: string, color: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td align="center" bgcolor="${color}" style="border-radius:6px">
+        <a href="${href}" style="display:block;padding:10px 8px;font-size:13px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:6px">${label}</a>
+      </td></tr></table>`;
+}
+
 function buildEmail(d: EnquiryDetails) {
-  const kind = d.isAdvanceBooking ? "Advance Booking" : "New Enquiry";
-  const subject = `${kind}: ${d.vehicleName || d.vehicleType} — ${d.name} (+91 ${d.phone})`;
-  const rows = enquiryRows(d);
+  const isAdvance = Boolean(d.isAdvanceBooking);
+  const kind = isAdvance ? "Advance Booking" : "New Enquiry";
+  const vehicle = d.vehicleName || d.vehicleType;
+  const route = d.dropLocation
+    ? `${d.pickupLocation} → ${d.dropLocation}`
+    : d.pickupLocation;
+  const subject = `${kind}: ${vehicle}, ${route} — ${d.name}`;
+  const rows = tripRows(d);
+  const receivedAt = new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 
   const text = [
-    `${kind} from the website`,
+    `${kind} from the website (${receivedAt})`,
+    "",
+    `Name: ${d.name}`,
+    `Mobile: +91 ${d.phone}`,
     "",
     ...rows.map(([label, value]) => `${label}: ${value}`),
+    ...(d.message ? ["", `Message: ${d.message}`] : []),
   ].join("\n");
 
+  const firstName = d.name.split(" ")[0];
   const tel = `tel:+91${d.phone}`;
-  const wa = `https://wa.me/91${d.phone}`;
-  const html = `
-<div style="font-family:Arial,sans-serif;max-width:560px;color:#1f2937">
-  <h2 style="margin:0 0 4px;color:#1e4d3a">${kind}</h2>
-  <p style="margin:0 0 16px;color:#6b7280;font-size:13px">
-    Received from ${escapeHtml(siteConfig.brand.name)} website
-  </p>
-  <table style="border-collapse:collapse;width:100%;font-size:14px">
-    ${rows
-      .map(
-        ([label, value]) => `
-    <tr>
-      <td style="padding:8px 12px;border:1px solid #e5e7eb;background:#f9fafb;font-weight:bold;width:130px;vertical-align:top">${label}</td>
-      <td style="padding:8px 12px;border:1px solid #e5e7eb;white-space:pre-wrap">${escapeHtml(value)}</td>
-    </tr>`,
-      )
-      .join("")}
-  </table>
-  <p style="margin:20px 0 0">
-    <a href="${tel}" style="display:inline-block;padding:10px 18px;background:#1e4d3a;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold">Call customer</a>
-    &nbsp;
-    <a href="${wa}" style="display:inline-block;padding:10px 18px;background:#25d366;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold">WhatsApp customer</a>
-  </p>
-</div>`;
+  const wa = `https://wa.me/91${d.phone}?text=${encodeURIComponent(
+    `Namaste ${firstName} ji, ${siteConfig.brand.name} se baat kar rahe hain. Aapki ${vehicle} ki enquiry (${route}) mili hai.`,
+  )}`;
+  const accent = isAdvance ? "#b45309" : "#1f5547";
+  const summary = [
+    vehicle,
+    d.passengers && `${d.passengers} passengers`,
+    formatDate(d.fromDate),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const brand = escapeHtml(siteConfig.brand.name);
+  const label = (text: string) =>
+    `<div style="font-size:11px;font-weight:bold;letter-spacing:0.8px;color:#6b7280;text-transform:uppercase">${text}</div>`;
+
+  const rowHtml = rows
+    .map(
+      ([name, value], i) => `
+          <tr>
+            <td width="42%" style="padding:8px 0;${i ? "border-top:1px solid #f0f1f3;" : ""}font-size:13px;color:#6b7280;vertical-align:top">${name}</td>
+            <td style="padding:8px 0;${i ? "border-top:1px solid #f0f1f3;" : ""}font-size:13px;font-weight:bold;color:#111827">${escapeHtml(value)}</td>
+          </tr>`,
+    )
+    .join("");
+
+  const html = `<!doctype html>
+<html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f5f7">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f4f5f7">
+<tr><td align="center" style="padding:16px 10px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:460px;background:#ffffff;border:1px solid #e6e8eb;border-radius:10px;font-family:Arial,Helvetica,sans-serif">
+
+  <tr><td bgcolor="#1f5547" style="padding:12px 18px;border-radius:10px 10px 0 0">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td style="font-size:14px;font-weight:bold;color:#ffffff">${brand}</td>
+      <td align="right"><span style="display:inline-block;padding:3px 9px;border-radius:999px;background:${isAdvance ? "#f59e0b" : "#ffffff"};color:${isAdvance ? "#ffffff" : accent};font-size:11px;font-weight:bold">${kind}</span></td>
+    </tr></table>
+  </td></tr>
+
+  <tr><td style="padding:18px 18px 4px">
+    <div style="font-size:18px;font-weight:bold;color:#111827">${escapeHtml(route)}</div>
+    <div style="margin-top:3px;font-size:13px;color:#6b7280">${escapeHtml(summary)}</div>
+  </td></tr>
+
+  <tr><td style="padding:14px 18px 0">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f6faf8;border:1px solid #e1eee7;border-radius:8px">
+      <tr><td style="padding:12px 14px">
+        ${label("Customer")}
+        <div style="margin-top:4px;font-size:15px;font-weight:bold;color:#111827">${escapeHtml(d.name)}</div>
+        <div style="font-size:14px;color:#374151">+91 ${d.phone.replace(/(\d{5})(\d{5})/, "$1 $2")}</div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:10px"><tr>
+          <td width="50%" style="padding-right:5px">${emailButton(tel, "Call", "#1f5547")}</td>
+          <td width="50%" style="padding-left:5px">${emailButton(wa, "WhatsApp", "#1faa59")}</td>
+        </tr></table>
+      </td></tr>
+    </table>
+  </td></tr>
+
+  <tr><td style="padding:18px 18px 0">
+    ${label("Booking details")}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:4px">${rowHtml}
+    </table>
+  </td></tr>
+${
+  d.message
+    ? `
+  <tr><td style="padding:12px 18px 0">
+    ${label("Message")}
+    <div style="margin-top:6px;padding:10px 12px;background:#f9fafb;border-left:3px solid ${accent};border-radius:4px;font-size:13px;line-height:1.5;color:#374151;white-space:pre-wrap">${escapeHtml(d.message)}</div>
+  </td></tr>`
+    : ""
+}
+  <tr><td style="padding:18px;font-size:11px;color:#9ca3af">
+    Received ${receivedAt} via ${brand} website
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body></html>`;
 
   return { subject, text, html };
 }

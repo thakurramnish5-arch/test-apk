@@ -8,22 +8,18 @@ import { LinkButton } from "@/components/ui/Button";
 import { faqs } from "@/data/faqs";
 import { siteConfig } from "@/config/site";
 import { generalWhatsAppUrl, telHref } from "@/lib/whatsapp";
+import { pageMetadata } from "@/lib/seo";
 import { MessageCircle, Phone } from "lucide-react";
 
 const pageTitle = "Contact & Book a Vehicle in Salooni";
 const pageDescription =
   "Call or WhatsApp our team in Salooni, Chamba to check vehicle availability and get a fair, upfront quote. Enquiry is free — no payment is needed to ask.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: pageTitle,
   description: pageDescription,
-  alternates: { canonical: "/contact" },
-  openGraph: {
-    title: pageTitle,
-    description: pageDescription,
-    url: "/contact",
-  },
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

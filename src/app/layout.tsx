@@ -7,7 +7,7 @@ import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { ChatAssistant } from "@/components/shared/ChatAssistant";
 import { PwaInit } from "@/components/shared/InstallAppButton";
 import { siteConfig } from "@/config/site";
-import { localBusinessSchema } from "@/lib/seo";
+import { siteSchema } from "@/lib/seo";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
@@ -16,9 +16,10 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const homeTitle = `${siteConfig.brand.name} | Taxi, Car & Vehicle Booking in Salooni, Chamba`;
-const homeDescription =
-  "Car, bus, pickup, truck, tractor or JCB on hire in Salooni, Chamba — with experienced drivers and fair, upfront rates. Local runs, weddings, Pathankot drops and outstation trips.";
+/** Fallbacks for routes without their own metadata (404, error). Pages set theirs via pageMetadata(). */
+const defaultTitle = `${siteConfig.brand.name} | Taxi, Car & Vehicle Booking in Salooni, Chamba`;
+const defaultDescription =
+  "Car, bus, pickup, truck, tractor or JCB on hire in Salooni, Chamba — with experienced drivers and fair, upfront rates.";
 
 export const viewport: Viewport = {
   themeColor: "#1f5f4e",
@@ -27,10 +28,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: homeTitle,
+    default: defaultTitle,
     template: `%s | ${siteConfig.brand.name}`,
   },
-  description: homeDescription,
+  description: defaultDescription,
   applicationName: siteConfig.brand.name,
   /** iPhone "Add to Home Screen": open full-screen like an app, with the short name under the icon. */
   appleWebApp: {
@@ -52,24 +53,24 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: siteConfig.brand.name }],
   creator: siteConfig.brand.name,
-  alternates: { canonical: "/" },
+  // No canonical here: it would be inherited by the 404 page and point it at
+  // the homepage. Each page sets its own canonical via pageMetadata().
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: siteConfig.url,
     siteName: siteConfig.brand.name,
-    title: homeTitle,
-    description: homeDescription,
+    title: defaultTitle,
+    description: defaultDescription,
   },
   twitter: {
     card: "summary_large_image",
-    title: homeTitle,
-    description: homeDescription,
+    title: defaultTitle,
+    description: defaultDescription,
   },
+  // Pages are indexable by default; only the preview size is set, so the
+  // 404 page's automatic "noindex" is not contradicted by an "index" tag.
   robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+    googleBot: { "max-image-preview": "large" },
   },
   formatDetection: { telephone: true },
 };
@@ -102,11 +103,11 @@ export default function RootLayout({
         <ChatAssistant />
         <PwaInit />
 
-        {/* LocalBusiness structured data — factual details only */}
+        {/* LocalBusiness + WebSite structured data — factual details only */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(localBusinessSchema),
+            __html: JSON.stringify(siteSchema),
           }}
         />
       </body>

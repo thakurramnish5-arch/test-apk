@@ -7,21 +7,17 @@ import { LinkButton } from "@/components/ui/Button";
 import { destinations } from "@/data/destinations";
 import { photoCredits } from "@/data/photoCredits";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
+import { pageMetadata } from "@/lib/seo";
 
-const pageTitle = "Trips and Destinations From Salooni";
+const pageTitle = "Taxi Trips From Salooni to Chamba, Dalhousie & Pathankot";
 const pageDescription =
   "Book a vehicle from Salooni to Chamba, Dalhousie, Khajjiar, Bharmour, Pathankot station and airport, and outstation trips. Enquire on WhatsApp or by phone.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: pageTitle,
   description: pageDescription,
-  alternates: { canonical: "/destinations" },
-  openGraph: {
-    title: pageTitle,
-    description: pageDescription,
-    url: "/destinations",
-  },
-};
+  path: "/destinations",
+});
 
 export default function DestinationsPage() {
   return (

@@ -13,6 +13,7 @@ import { Logo } from "@/components/shared/Logo";
 import { InstallAppButton } from "@/components/shared/InstallAppButton";
 import { hasSocialLink, siteConfig } from "@/config/site";
 import { categories } from "@/data/categories";
+import { categoryPagePath } from "@/data/categoryPages";
 import { generalWhatsAppUrl, telHref } from "@/lib/whatsapp";
 
 const companyLinks = [
@@ -132,7 +133,7 @@ export function Footer() {
             <FooterColumn
               title="Vehicles"
               links={categories.map((c) => ({
-                href: `/vehicles?category=${c.id}`,
+                href: categoryPagePath[c.id],
                 label: c.pluralName,
               }))}
             />

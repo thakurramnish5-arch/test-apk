@@ -4,6 +4,7 @@ import { ArrowRight, Users } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { categories } from "@/data/categories";
+import { categoryPagePath } from "@/data/categoryPages";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 export function CategoryGrid() {
@@ -177,7 +178,7 @@ export function CategoryGrid() {
 
                     {/* View */}
                     <Link
-                      href={`/vehicles?category=${category.id}`}
+                      href={categoryPagePath[category.id]}
                       className="
                         inline-flex h-9
                         items-center justify-center

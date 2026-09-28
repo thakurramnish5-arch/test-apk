@@ -64,7 +64,7 @@ const birds = [
  * The first line is the real heading for search engines and screen readers.
  */
 const headings = [
-  "Your Trusted Ride in Salooni, Chamba",
+  "Taxi & Vehicle Booking in Salooni, Chamba",
   "Experienced Drivers, Honest Rates",
   "Safe Journeys on Every Hill Road",
 ];

@@ -4,23 +4,18 @@ import { FaqAccordion } from "@/components/shared/FaqAccordion";
 import { ContactSection } from "@/components/shared/ContactSection";
 import { LinkButton } from "@/components/ui/Button";
 import { faqs } from "@/data/faqs";
-import { faqSchema } from "@/lib/seo";
+import { faqSchema, pageMetadata } from "@/lib/seo";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 const pageTitle = "Vehicle Booking FAQs for Salooni";
 const pageDescription =
   "Answers to common questions about booking a vehicle in Salooni, Chamba: pricing, drivers, pickups, outstation trips, goods, JCB and tractor hire.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: pageTitle,
   description: pageDescription,
-  alternates: { canonical: "/faq" },
-  openGraph: {
-    title: pageTitle,
-    description: pageDescription,
-    url: "/faq",
-  },
-};
+  path: "/faq",
+});
 
 export default function FaqPage() {
   return (

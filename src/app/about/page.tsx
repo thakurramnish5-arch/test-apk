@@ -8,21 +8,17 @@ import { Reveal } from "@/components/ui/Reveal";
 import { LinkButton } from "@/components/ui/Button";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { siteConfig } from "@/config/site";
+import { pageMetadata } from "@/lib/seo";
 
 const pageTitle = "About Us — Vehicles on Hire in Salooni";
 const pageDescription =
   "Salooni Transport Hub provides cars, buses, pickups, trucks, tractors and JCB in Salooni, Chamba — with experienced drivers and operators, at fair local rates.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: pageTitle,
   description: pageDescription,
-  alternates: { canonical: "/about" },
-  openGraph: {
-    title: pageTitle,
-    description: pageDescription,
-    url: "/about",
-  },
-};
+  path: "/about",
+});
 
 const principles = [
   {

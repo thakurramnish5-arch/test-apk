@@ -101,3 +101,25 @@ export interface EnquiryDetails {
   /** Marks an advance/future reservation rather than an immediate need. */
   isAdvanceBooking?: boolean;
 }
+
+/**
+ * A landing page for one vehicle category, e.g. /taxi-car-booking.
+ * Content must describe the real service — see src/data/categoryPages.ts.
+ */
+export interface CategoryPage {
+  slug: string;
+  category: VehicleCategory;
+  /** Meta title; the "| brand" suffix is added by the layout template. */
+  title: string;
+  /** Meta description, kept within ~160 characters. */
+  description: string;
+  eyebrow: string;
+  heading: string;
+  intro: string;
+  /** schema.org Service `serviceType`. */
+  serviceType: string;
+  /** Short paragraphs, each under its own H2. */
+  sections: { heading: string; body: string }[];
+  /** Ids from src/data/faqs.ts shown on the page. */
+  faqIds: string[];
+}

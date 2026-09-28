@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { breadcrumbSchema } from "@/lib/seo";
 
 interface PageHeaderProps {
   eyebrow?: string;
@@ -90,6 +91,23 @@ export function PageHeader({
 
         {children && <div className="mt-6">{children}</div>}
       </div>
+
+      {/* Breadcrumb structured data, matching the visible trail */}
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              breadcrumbSchema(
+                breadcrumbs.map((crumb) => ({
+                  name: crumb.label,
+                  path: crumb.href,
+                })),
+              ),
+            ),
+          }}
+        />
+      )}
     </section>
   );
 }

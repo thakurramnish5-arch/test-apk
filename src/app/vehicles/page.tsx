@@ -1,23 +1,22 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { VehicleBrowser } from "@/components/vehicles/VehicleBrowser";
+import {
+  VehicleBrowser,
+  VehicleBrowserView,
+} from "@/components/vehicles/VehicleBrowser";
 import { ContactSection } from "@/components/shared/ContactSection";
+import { pageMetadata } from "@/lib/seo";
 
-const pageTitle = "Vehicles on Hire in Salooni";
+const pageTitle = "Vehicles on Hire in Salooni, Chamba";
 const pageDescription =
   "Cars, buses, pickups, trucks, tractors and JCB on hire in Salooni, Chamba, with experienced drivers and operators. Send a free enquiry on WhatsApp or phone.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: pageTitle,
   description: pageDescription,
-  alternates: { canonical: "/vehicles" },
-  openGraph: {
-    title: pageTitle,
-    description: pageDescription,
-    url: "/vehicles",
-  },
-};
+  path: "/vehicles",
+});
 
 export default function VehiclesPage() {
   return (
@@ -32,8 +31,9 @@ export default function VehiclesPage() {
 
       <section className="bg-charcoal-50 py-6 sm:py-8">
         <div className="container-page">
-          {/* useSearchParams in VehicleBrowser requires a Suspense boundary */}
-          <Suspense fallback={<BrowserSkeleton />}>
+          {/* useSearchParams in VehicleBrowser requires a Suspense boundary.
+              The fallback is the full list, so it is in the static HTML. */}
+          <Suspense fallback={<VehicleBrowserView />}>
             <VehicleBrowser />
           </Suspense>
         </div>
@@ -41,22 +41,5 @@ export default function VehiclesPage() {
 
       <ContactSection className="bg-white py-10 sm:py-12 lg:py-14" />
     </>
-  );
-}
-
-/** Loading placeholder shown while the category tabs hydrate. */
-function BrowserSkeleton() {
-  return (
-    <div aria-hidden="true">
-      <div className="h-10 animate-pulse rounded-full bg-white" />
-      <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }, (_, i) => (
-          <div
-            key={i}
-            className="h-[380px] animate-pulse rounded-card border border-charcoal-200 bg-white"
-          />
-        ))}
-      </div>
-    </div>
   );
 }

@@ -7,21 +7,17 @@ import { Reveal } from "@/components/ui/Reveal";
 import { LinkButton } from "@/components/ui/Button";
 import { services } from "@/data/services";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
+import { pageMetadata } from "@/lib/seo";
 
 const pageTitle = "Vehicle Services in Salooni, Chamba";
 const pageDescription =
   "Vehicles with experienced drivers from Salooni, Chamba for weddings, hospital visits, Pathankot drops, goods, house shifting, JCB, trucks and tractors. Fair rates.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: pageTitle,
   description: pageDescription,
-  alternates: { canonical: "/services" },
-  openGraph: {
-    title: pageTitle,
-    description: pageDescription,
-    url: "/services",
-  },
-};
+  path: "/services",
+});
 
 export default function ServicesPage() {
   return (

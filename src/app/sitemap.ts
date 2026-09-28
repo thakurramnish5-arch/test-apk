@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
+import { categoryPages } from "@/data/categoryPages";
 import { vehicles } from "@/data/vehicles";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -21,6 +22,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: route.changeFrequency,
       priority: route.priority,
+    })),
+    // Vehicle-type landing pages (/taxi-car-booking, /jcb-booking…)
+    ...categoryPages.map((page) => ({
+      url: `${siteConfig.url}/${page.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
     })),
     ...vehicles.map((vehicle) => ({
       url: `${siteConfig.url}/vehicles/${vehicle.slug}`,

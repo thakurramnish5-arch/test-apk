@@ -40,6 +40,21 @@ export function VehicleBrowser() {
     window.history.replaceState(null, "", url);
   };
 
+  return <VehicleBrowserView category={category} onSelect={selectCategory} />;
+}
+
+/**
+ * The tabs and vehicle grid. Also rendered on its own, unfiltered, as the
+ * Suspense fallback on /vehicles — so the prerendered HTML search engines
+ * read lists every vehicle and links to each vehicle page.
+ */
+export function VehicleBrowserView({
+  category = "all",
+  onSelect,
+}: {
+  category?: CategoryFilter;
+  onSelect?: (id: CategoryFilter) => void;
+}) {
   const filtered =
     category === "all"
       ? vehicles
@@ -61,7 +76,7 @@ export function VehicleBrowser() {
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => selectCategory(tab.id)}
+              onClick={() => onSelect?.(tab.id)}
               className={cn(
                 "inline-flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors",
                 active

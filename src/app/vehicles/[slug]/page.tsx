@@ -18,17 +18,24 @@ import { VehicleGallery } from "@/components/vehicles/VehicleGallery";
 import { VehicleCard } from "@/components/vehicles/VehicleCard";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { categoryMap } from "@/data/categories";
+import { categoryPagePath } from "@/data/categoryPages";
 import {
   getRelatedVehicles,
   getVehicleBySlug,
   vehicles,
 } from "@/data/vehicles";
-import { breadcrumbSchema } from "@/lib/seo";
+import { breadcrumbSchema, pageMetadata } from "@/lib/seo";
 import { generalWhatsAppUrl, telHref } from "@/lib/whatsapp";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+/**
+ * Unknown slugs get a real 404. Without this the page streams with a 200
+ * status before notFound() runs — a "soft 404" to search engines.
+ */
+export const dynamicParams = false;
 
 /** Pre-renders every vehicle page at build time. */
 export function generateStaticParams() {
@@ -86,23 +93,12 @@ export async function generateMetadata({
   const title = `${vehicle.name} on Hire in Salooni`;
   const description = vehicleMetaDescription(vehicle);
 
-  return {
+  return pageMetadata({
     title,
     description,
-    alternates: { canonical: `/vehicles/${vehicle.slug}` },
-    openGraph: {
-      title,
-      description,
-      url: `/vehicles/${vehicle.slug}`,
-      images: [{ url: vehicle.image, alt: vehicle.name }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [vehicle.image],
-    },
-  };
+    path: `/vehicles/${vehicle.slug}`,
+    image: { url: vehicle.image, alt: vehicle.name },
+  });
 }
 
 export default async function VehicleDetailPage({ params }: PageProps) {
@@ -141,7 +137,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
             <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
             <li>
               <Link
-                href={`/vehicles?category=${vehicle.category}`}
+                href={categoryPagePath[vehicle.category]}
                 className="transition-colors hover:text-forest-700"
               >
                 {category.pluralName}
@@ -393,6 +389,10 @@ export default async function VehicleDetailPage({ params }: PageProps) {
             breadcrumbSchema([
               { name: "Home", path: "/" },
               { name: "Vehicles", path: "/vehicles" },
+              {
+                name: category.pluralName,
+                path: categoryPagePath[vehicle.category],
+              },
               { name: vehicle.name, path: `/vehicles/${vehicle.slug}` },
             ]),
           ),

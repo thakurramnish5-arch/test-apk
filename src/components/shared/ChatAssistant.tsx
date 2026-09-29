@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { MessageCircle, Phone, Send, Sparkles, X } from "lucide-react";
 import {
   bookingFlows,
@@ -310,14 +311,14 @@ export function ChatAssistant() {
 
                 {m.cta && (
                   <div className="mt-2.5 flex flex-wrap gap-2">
-                    <a
+                    <Link
                       href="/contact#enquiry"
                       onClick={() => setOpen(false)}
                       className="inline-flex items-center gap-1.5 rounded-lg bg-forest-700 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-forest-800"
                     >
                       <Send className="h-3.5 w-3.5" aria-hidden="true" />
                       Send an enquiry
-                    </a>
+                    </Link>
                     <a
                       href={generalWhatsAppUrl()}
                       target="_blank"

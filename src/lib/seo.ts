@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { faqs } from "@/data/faqs";
+import { serviceAreas } from "@/data/serviceAreas";
+import type { FaqItem } from "@/types";
 
 /** Stable ids so page-level schema can point at the one business entity. */
 const businessId = `${siteConfig.url}/#business`;
@@ -63,10 +65,18 @@ export function pageMetadata({
   };
 }
 
+/** A place from src/data/serviceAreas.ts as schema.org data. */
+const areaPlace = (name: string) => ({
+  "@type": "Place",
+  name: `${name}, Chamba, Himachal Pradesh`,
+});
+
 // Where customers are picked up. Outstation drops can go anywhere, but
-// the business is local to Salooni tehsil for now.
+// the business is local to Salooni tehsil and the nearby areas that have
+// their own page under /areas.
 const areaServed = [
   { "@type": "City", name: "Salooni" },
+  ...serviceAreas.map((area) => areaPlace(area.name)),
   { "@type": "AdministrativeArea", name: "Chamba district, Himachal Pradesh" },
 ];
 
@@ -127,11 +137,14 @@ export function serviceSchema({
   serviceType,
   description,
   path,
+  area,
 }: {
   name: string;
   serviceType: string;
   description: string;
   path: string;
+  /** Narrows the service to one place, for an /areas page. */
+  area?: string;
 }): object {
   return {
     "@context": "https://schema.org",
@@ -141,23 +154,28 @@ export function serviceSchema({
     description,
     url: `${siteConfig.url}${path}`,
     provider: { "@id": businessId },
-    areaServed,
+    areaServed: area ? areaPlace(area) : areaServed,
+  };
+}
+
+/** FAQPage schema for a list of questions shown on the page. */
+export function faqPageSchema(items: FaqItem[]): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 }
 
 /** FAQPage schema generated from the FAQ data file. */
-export const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.question,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: faq.answer,
-    },
-  })),
-};
+export const faqSchema = faqPageSchema(faqs);
 
 /**
  * Breadcrumb schema helper for inner pages. The current page may omit its

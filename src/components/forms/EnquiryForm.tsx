@@ -81,6 +81,8 @@ interface EnquiryFormProps {
   defaultVehicleType?: string;
   /** Pre-fills the drop location, e.g. from a destination card. */
   defaultDropLocation?: string;
+  /** Pre-fills the pickup location, e.g. on a local area page. */
+  defaultPickupLocation?: string;
   /**
    * Narrows the vehicle-type and purpose lists to passenger travel.
    * A trip to a destination is never a JCB, tractor or truck job.
@@ -113,6 +115,7 @@ export function EnquiryForm({
   bare = false,
   defaultVehicleType = "",
   defaultDropLocation = "",
+  defaultPickupLocation = "",
   passengerOnly = false,
   vehicleName,
   className,
@@ -134,6 +137,7 @@ export function EnquiryForm({
   const [values, setValues] = useState<EnquiryDetails>({
     ...emptyValues,
     vehicleType: initialVehicleType,
+    pickupLocation: defaultPickupLocation,
     dropLocation: defaultDropLocation,
   });
   const [errors, setErrors] = useState<EnquiryErrors>({});
@@ -225,6 +229,7 @@ export function EnquiryForm({
     setValues({
       ...emptyValues,
       vehicleType: initialVehicleType,
+      pickupLocation: defaultPickupLocation,
       dropLocation: defaultDropLocation,
     });
   };
@@ -233,6 +238,7 @@ export function EnquiryForm({
     setValues({
       ...emptyValues,
       vehicleType: initialVehicleType,
+      pickupLocation: defaultPickupLocation,
       dropLocation: defaultDropLocation,
     });
     setSubmitted(null);

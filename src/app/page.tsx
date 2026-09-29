@@ -4,6 +4,7 @@ import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { HappyCustomers } from "@/components/home/HappyCustomers";
 import { ServicesPreview } from "@/components/home/ServicesPreview";
+import { AreasPreview } from "@/components/home/AreasPreview";
 import { DestinationsPreview } from "@/components/home/DestinationsPreview";
 import { LocalTrust } from "@/components/home/LocalTrust";
 import { AdvanceBookingCta } from "@/components/home/AdvanceBookingCta";
@@ -32,6 +33,7 @@ export default function HomePage() {
       <HowItWorks />
       <DestinationsPreview />
       <ServicesPreview />
+      <AreasPreview />
       <AdvanceBookingCta />
       <FaqPreview />
       <ContactSection className="bg-charcoal-50 py-10 sm:py-12 lg:py-14" />

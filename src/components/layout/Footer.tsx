@@ -14,6 +14,7 @@ import { InstallAppButton } from "@/components/shared/InstallAppButton";
 import { hasSocialLink, siteConfig } from "@/config/site";
 import { categories } from "@/data/categories";
 import { categoryPagePath } from "@/data/categoryPages";
+import { serviceAreaPath, serviceAreas } from "@/data/serviceAreas";
 import { generalWhatsAppUrl, telHref } from "@/lib/whatsapp";
 
 const companyLinks = [
@@ -145,6 +146,33 @@ export function Footer() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Local area pages — every page links them, so search engines find them */}
+        <div className="mt-6 sm:mt-8 border-t border-charcoal-800 pt-8">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
+            Areas We Serve
+          </h3>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {serviceAreas.map((area) => (
+              <li key={area.slug}>
+                <Link
+                  href={serviceAreaPath(area.slug)}
+                  className="text-charcoal-400 transition-colors hover:text-white"
+                >
+                  Taxi in {area.name}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link
+                href="/areas"
+                className="text-charcoal-400 transition-colors hover:text-white"
+              >
+                All Areas
+              </Link>
+            </li>
+          </ul>
         </div>
 
         {/* Support row */}

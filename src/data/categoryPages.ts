@@ -5,9 +5,10 @@ import type { CategoryPage, VehicleCategory } from "@/types";
  *
  * Every line here must stay true to the actual service: the vehicles on
  * each page come from src/data/vehicles.ts, and the copy only repeats what
- * the fleet, services and FAQs already say. Do not add pages per town or
- * reword the same page for another keyword — near-duplicate pages hurt
- * search ranking rather than help it.
+ * the fleet, services and FAQs already say. Do not reword the same page
+ * for another keyword — near-duplicate pages hurt search ranking rather
+ * than help it. Per-place pages live in serviceAreas.ts, each with its own
+ * copy.
  */
 export const categoryPages: CategoryPage[] = [
   {

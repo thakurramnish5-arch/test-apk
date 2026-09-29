@@ -123,3 +123,31 @@ export interface CategoryPage {
   /** Ids from src/data/faqs.ts shown on the page. */
   faqIds: string[];
 }
+
+/**
+ * A local landing page for one place we pick up from, e.g. /areas/kihar.
+ * Content must be specific to that place — see src/data/serviceAreas.ts.
+ */
+export interface ServiceArea {
+  slug: string;
+  name: string;
+  /** Other spellings people type into Google, e.g. "Bhanjradu". */
+  aka: string[];
+  /** Meta title; the "| brand" suffix is added by the layout template. */
+  title: string;
+  /** Meta description, kept within ~160 characters. */
+  description: string;
+  /** One line for the area card on /areas and the homepage. */
+  summary: string;
+  intro: string;
+  /** Short paragraphs, each under its own H2. */
+  sections: { heading: string; body: string }[];
+  /** Common trips from this place — qualitative only, never km or hours. */
+  trips: { to: string; note: string }[];
+  /** Vehicle categories most asked for here, most common first. */
+  popularCategories: VehicleCategory[];
+  /** Questions written for this place only. */
+  faqs: FaqItem[];
+  /** Slugs of neighbouring areas, linked at the bottom of the page. */
+  nearby: string[];
+}

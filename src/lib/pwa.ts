@@ -10,7 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 /** Signed Android app, built from twa/ (see twa/README.md). */
 export const ANDROID_APK_URL = "/app/salooni-transport.apk";
-const ANDROID_PACKAGE_ID = "in.saloonitransporthub.app";
+const ANDROID_PACKAGE_ID = "in.saloonitransport.app";
 
 export type InstallPlatform = "ios" | "android" | "desktop";
 

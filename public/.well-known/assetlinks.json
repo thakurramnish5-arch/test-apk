@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "in.saloonitransporthub.app",
+      "package_name": "in.saloonitransport.app",
       "sha256_cert_fingerprints": [
         "5C:8E:55:73:C2:DE:7A:60:1E:44:27:FB:1B:71:22:8E:4E:7A:09:43:6F:49:AF:4B:BC:AC:68:C4:C9:03:E0:AB"
       ]

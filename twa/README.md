@@ -3,9 +3,9 @@
 The "Download App" button on Android phones downloads
 `public/app/salooni-transport.apk`. That APK is built from this folder: a
 Trusted Web Activity (generated with Bubblewrap) that opens
-`https://saloonitransporthub.in` full-screen, with no browser bar.
+`https://saloonitransport.in` full-screen, with no browser bar.
 
-- Package: `in.saloonitransporthub.app`
+- Package: `in.saloonitransport.app`
 - Site config: `twa-manifest.json` and `app/build.gradle` (`hostName`)
 - Ownership proof: `public/.well-known/assetlinks.json` (signing key SHA-256)
 

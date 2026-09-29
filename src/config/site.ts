@@ -121,7 +121,7 @@ export const siteConfig = {
   ],
 
   /** Used for canonical URLs, sitemap and Open Graph metadata. */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://saloonitransporthub.in",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://saloonitransport.in",
 } as const;
 
 export type SiteConfig = typeof siteConfig;

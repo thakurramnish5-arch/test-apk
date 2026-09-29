@@ -21,8 +21,8 @@ plugins {
 }
 
 def twaManifest = [
-    applicationId: 'in.saloonitransporthub.app',
-    hostName: 'saloonitransporthub.vercel.app', // The domain being opened in the TWA.
+    applicationId: 'in.saloonitransport.app',
+    hostName: 'saloonitransport.vercel.app', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
     name: 'Salooni Transport Hub', // The application name.
     launcherName: 'Salooni Transport', // The name shown on the Android Launcher.
@@ -52,9 +52,9 @@ def twaManifest = [
 
 android {
     compileSdkVersion 36
-    namespace "in.saloonitransporthub.app"
+    namespace "in.saloonitransport.app"
     defaultConfig {
-        applicationId "in.saloonitransporthub.app"
+        applicationId "in.saloonitransport.app"
         minSdkVersion 21
         targetSdkVersion 36
         versionCode 1
@@ -81,7 +81,7 @@ android {
 
         
             // This is used by Meta Quest.
-            resValue "string", "fullScopeUrl", 'https://saloonitransporthub.vercel.app/'
+            resValue "string", "fullScopeUrl", 'https://saloonitransport.vercel.app/'
         
 
         

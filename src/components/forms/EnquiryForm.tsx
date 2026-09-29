@@ -771,17 +771,23 @@ export function EnquiryForm({
           vehicle we look for. The rest is the journey and how to reach you.
         */}
         {honeypot}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Small phones get one field per row; two columns once there's room */}
+        <div className="grid grid-cols-1 gap-3 @[19rem]/form:grid-cols-2">
           {nameField}
           {phoneField}
           {/* Vehicle type spans the row unless passengers sits beside it */}
-          <div className={cn("min-w-0", !asksPassengers && "col-span-2")}>
+          <div
+            className={cn(
+              "min-w-0",
+              !asksPassengers && "@[19rem]/form:col-span-2",
+            )}
+          >
             {vehicleField}
           </div>
           {passengersField}
           {pickupField}
           {dropField}
-          <div className="col-span-2">{tripTypeField}</div>
+          <div className="@[19rem]/form:col-span-2">{tripTypeField}</div>
           {fromDateField}
           {toDateField}
         </div>

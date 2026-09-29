@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
   AlertCircle,
   CalendarCheck,
@@ -756,7 +756,7 @@ export function EnquiryForm({
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-forest-500 opacity-75" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-forest-600" />
                 </span>
-                Bookings Open — What Do You Need?
+                <RotatingHeadline />
               </h2>
               <p className="mt-0.5 text-xs text-charcoal-500">
                 Car, bus, truck, tractor or JCB — fill this in and a driver
@@ -879,6 +879,48 @@ export function EnquiryForm({
 }
 
 // ------------------------------------------------------------- sub-components
+
+const HEADLINES = [
+  "Bookings Open — What Do You Need?",
+  "Going Anywhere? Book Your Ride Now",
+  "Any Route, Any Vehicle — Book Today",
+  "From Anywhere to Anywhere — We Drive",
+];
+
+/*
+  Cycles the form heading every 3s. Every line sits in the same grid cell,
+  so the box is always as tall as the longest one and nothing around it moves.
+*/
+function RotatingHeadline() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(
+      () => setIndex((i) => (i + 1) % HEADLINES.length),
+      3000,
+    );
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <span className="grid min-w-0">
+      <span className="sr-only">{HEADLINES[0]}</span>
+      {HEADLINES.map((line, i) => (
+        <span
+          key={line}
+          aria-hidden="true"
+          className={cn(
+            "col-start-1 row-start-1 transition-all duration-500",
+            i === index ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0",
+          )}
+        >
+          {line}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 function FormSection({
   step,

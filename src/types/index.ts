@@ -151,3 +151,34 @@ export interface ServiceArea {
   /** Slugs of neighbouring areas, linked at the bottom of the page. */
   nearby: string[];
 }
+
+/**
+ * A taxi route page from Salooni, e.g. /routes/salooni-to-chamba-taxi.
+ * Content must be specific to that route — see src/data/routes.ts.
+ */
+export interface TaxiRoute {
+  slug: string;
+  /** Destination name as people search it, e.g. "Chamba". */
+  to: string;
+  /** Slug in src/data/destinations.ts, for the header photo. */
+  destinationSlug: string;
+  /** Meta title; the "| brand" suffix is added by the layout template. */
+  title: string;
+  /** Meta description, kept within ~160 characters. */
+  description: string;
+  /** The page H1. */
+  heading: string;
+  intro: string;
+  /** One line for route cards and link lists. */
+  summary: string;
+  /** Short paragraphs, each under its own H2. */
+  sections: { heading: string; body: string }[];
+  /** The trip in the other direction, back to Salooni. */
+  returnTrip: { heading: string; body: string };
+  /** Slugs from src/data/vehicles.ts that suit this road, best first. */
+  vehicleSlugs: string[];
+  /** Questions written for this route only. */
+  faqs: FaqItem[];
+  /** Slugs of related routes, linked at the bottom of the page. */
+  related: string[];
+}

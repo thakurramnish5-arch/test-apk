@@ -25,13 +25,14 @@ const companyLinks = [
   { href: "/faq", label: "FAQs" },
 ];
 
+// Labels stay short; each goes to its taxi route page.
 const destinationLinks = [
-  { href: "/destinations#chamba", label: "Chamba" },
-  { href: "/destinations#dalhousie", label: "Dalhousie" },
-  { href: "/destinations#khajjiar", label: "Khajjiar" },
-  { href: "/destinations#bharmour", label: "Bharmour" },
-  { href: "/destinations#pathankot", label: "Pathankot" },
-  { href: "/destinations#dharamshala", label: "Dharamshala" },
+  { href: "/routes/salooni-to-chamba-taxi", label: "Chamba" },
+  { href: "/routes/salooni-to-dalhousie-taxi", label: "Dalhousie" },
+  { href: "/routes/salooni-to-khajjiar-taxi", label: "Khajjiar" },
+  { href: "/routes/salooni-to-manimahesh-taxi", label: "Bharmour" },
+  { href: "/routes/salooni-to-pathankot-taxi", label: "Pathankot" },
+  { href: "/routes/salooni-to-dharamshala-taxi", label: "Dharamshala" },
 ];
 
 export function Footer() {

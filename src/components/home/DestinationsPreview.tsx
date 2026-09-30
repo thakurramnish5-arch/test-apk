@@ -2,6 +2,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { LinkButton } from "@/components/ui/Button";
 import { DestinationCard } from "@/components/shared/DestinationCard";
+import { RouteLinks } from "@/components/shared/RouteLinks";
 import { featuredDestinations } from "@/data/destinations";
 
 export function DestinationsPreview() {
@@ -21,6 +22,11 @@ export function DestinationsPreview() {
             </Reveal>
           ))}
         </div>
+
+        <h3 className="mt-8 text-center font-display text-base font-bold text-charcoal-900 sm:mt-10">
+          Taxi routes from Salooni
+        </h3>
+        <RouteLinks variant="pills" className="mt-3" />
 
         <div className="mt-6 sm:mt-9 flex flex-col justify-center gap-2.5 sm:flex-row">
           <LinkButton href="/contact#enquiry" variant="primary" size="lg">

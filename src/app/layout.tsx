@@ -17,7 +17,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 /** Fallbacks for routes without their own metadata (404, error). Pages set theirs via pageMetadata(). */
-const defaultTitle = `${siteConfig.brand.name} | Taxi, Car & Vehicle Booking in Salooni, Chamba`;
+const defaultTitle = `${siteConfig.brand.name} | Salooni Taxi, Cab & Vehicle Booking, Chamba`;
 const defaultDescription =
   "Car, bus, pickup, truck, tractor or JCB on hire in Salooni, Chamba — with experienced drivers and fair, upfront rates.";
 

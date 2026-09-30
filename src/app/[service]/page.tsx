@@ -5,6 +5,7 @@ import { ArrowRight, MessageCircle } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ContactSection } from "@/components/shared/ContactSection";
 import { FaqAccordion } from "@/components/shared/FaqAccordion";
+import { RouteLinks } from "@/components/shared/RouteLinks";
 import { VehicleCard } from "@/components/vehicles/VehicleCard";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -159,6 +160,15 @@ export default async function CategoryLandingPage({ params }: PageProps) {
                   .
                 </p>
               </div>
+
+              {page.category === "car" && (
+                <div>
+                  <h2 className="font-display text-xl font-bold text-charcoal-900 sm:text-2xl">
+                    Popular taxi routes from Salooni
+                  </h2>
+                  <RouteLinks variant="pills" align="start" className="mt-4" />
+                </div>
+              )}
             </div>
 
             <aside className="lg:sticky lg:top-24 lg:self-start">
@@ -236,6 +246,7 @@ export default async function CategoryLandingPage({ params }: PageProps) {
               serviceType: page.serviceType,
               description: page.description,
               path: `/${page.slug}`,
+              ...(page.category === "car" ? { type: "TaxiService" as const } : {}),
             }),
           ),
         }}

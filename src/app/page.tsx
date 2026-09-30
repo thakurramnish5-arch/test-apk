@@ -14,9 +14,9 @@ import { siteConfig } from "@/config/site";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
-  title: `Taxi & Vehicle Booking in Salooni, Chamba | ${siteConfig.brand.name}`,
+  title: `Salooni Taxi & Cab Service | ${siteConfig.brand.name}, Chamba`,
   description:
-    "Book a taxi, car, bus, pickup, truck, tractor or JCB in Salooni, Chamba, with experienced drivers and fair, upfront rates. Enquire free on WhatsApp or phone.",
+    "Local and outstation taxi and cab booking in Salooni, Chamba — plus bus, pickup, truck, tractor and JCB on hire, with experienced drivers. Enquire free on WhatsApp.",
   path: "/",
   absoluteTitle: true,
 });

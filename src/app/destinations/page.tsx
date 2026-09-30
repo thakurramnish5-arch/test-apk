@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { DestinationCard } from "@/components/shared/DestinationCard";
+import { RouteLinks } from "@/components/shared/RouteLinks";
 import { ContactSection } from "@/components/shared/ContactSection";
 import { Reveal } from "@/components/ui/Reveal";
 import { LinkButton } from "@/components/ui/Button";
@@ -53,6 +54,11 @@ export default function DestinationsPage() {
               </Reveal>
             ))}
           </div>
+
+          <h2 className="mt-8 text-center font-display text-xl font-bold text-charcoal-900 sm:mt-10">
+            Taxi Route Details
+          </h2>
+          <RouteLinks variant="pills" className="mt-4" />
 
           <div className="mt-6 sm:mt-8 rounded-2xl border border-charcoal-200 bg-white p-6 text-center shadow-sm sm:p-8">
             <h2 className="font-display text-xl font-bold text-charcoal-900">

@@ -2,6 +2,7 @@ import { siteConfig } from "@/config/site";
 import { categoryPages } from "@/data/categoryPages";
 import { destinations } from "@/data/destinations";
 import { serviceAreaPath, serviceAreas } from "@/data/serviceAreas";
+import { taxiRoutePath, taxiRoutes } from "@/data/routes";
 
 /** Built once at deploy time, like the sitemap. */
 export const dynamic = "force-static";
@@ -39,6 +40,13 @@ export function GET() {
       const aka = area.aka.length > 0 ? ` (also ${area.aka.join(", ")})` : "";
       return `- [${area.name}${aka}](${link(serviceAreaPath(area.slug))}): ${area.summary}`;
     }),
+    "",
+    "## Taxi routes from Salooni",
+    "",
+    `- [All routes](${link("/routes")})`,
+    ...taxiRoutes.map(
+      (r) => `- [${r.heading}](${link(taxiRoutePath(r.slug))}): ${r.summary}`,
+    ),
     "",
     "## Popular trips from Salooni",
     "",

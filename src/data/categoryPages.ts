@@ -14,15 +14,19 @@ export const categoryPages: CategoryPage[] = [
   {
     slug: "taxi-car-booking",
     category: "car",
-    title: "Taxi & Car Booking in Salooni, Chamba",
+    title: "Taxi & Cab Booking in Salooni, Chamba",
     description:
-      "Book a taxi or car with an experienced driver in Salooni, Chamba — Alto to Innova. Chamba runs, Pathankot station drops, Bharmour yatra and outstation trips.",
+      "Book a taxi or cab with an experienced driver in Salooni, Chamba — Alto to Innova. Local runs, Chamba, Pathankot station drops and outstation trips.",
     eyebrow: "Taxi & Car Booking",
-    heading: "Taxi & Car Booking in Salooni, Chamba",
+    heading: "Taxi & Cab Booking in Salooni, Chamba",
     intro:
       "Local taxis from small hatchbacks to 7- and 9-seaters, each with an experienced driver who knows the hill roads around Salooni and Chamba. Tell us the route and the number of people, and we suggest the car that suits it.",
     serviceType: "Taxi service",
     sections: [
+      {
+        heading: "Local taxi in Salooni",
+        body: "For short runs around Salooni — to the tehsil office, the bank, the market, a wedding in a nearby village or back home with shopping — book a car for the trip or for a few hours. Tell us the pickup village and where you need to go.",
+      },
       {
         heading: "Chamba runs, station drops and outstation trips",
         body: "Most bookings are day trips to Chamba for hospital visits, office work or the market, and drops to Pathankot railway station or airport timed to your train or flight. We also go to Dalhousie, Khajjiar and Dharamshala, and outstation to Amritsar, Jammu, Chandigarh or Delhi.",
@@ -33,7 +37,11 @@ export const categoryPages: CategoryPage[] = [
       },
       {
         heading: "Pickup from your village",
-        body: "Trips start from Salooni and nearby villages in the tehsil, including the Kihar and Bhandal valley side. Share your village and the road access when you enquire. Every car comes with a driver — self-drive is not offered.",
+        body: "Trips start from Salooni and nearby villages in the tehsil, including the Kihar and Bhandal valley side. Share your village and the road access when you enquire.",
+      },
+      {
+        heading: "Car rental with driver",
+        body: "Looking for a car on rent in Salooni? Every car is rented with its driver — self-drive is not offered — by the trip, by the day or for several days. The driver knows the hill roads, so you do not have to drive them yourself.",
       },
     ],
     faqIds: ["f-7", "f-1", "f-2", "f-9"],

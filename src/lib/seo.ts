@@ -99,6 +99,8 @@ export const siteSchema = {
       "@type": "LocalBusiness",
       "@id": businessId,
       name: siteConfig.brand.name,
+      // The name people also use for the business and type into Google.
+      alternateName: siteConfig.brand.shortName,
       description: siteConfig.brand.description,
       url: siteConfig.url,
       logo: `${siteConfig.url}/icon-512.png`,
@@ -119,6 +121,12 @@ export const siteSchema = {
       },
       areaServed,
       knowsLanguage: ["en", "hi"],
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: siteConfig.contact.phoneNumber,
+        contactType: "reservations",
+        availableLanguage: ["en", "hi"],
+      },
     },
     {
       "@type": "WebSite",
@@ -138,6 +146,7 @@ export function serviceSchema({
   description,
   path,
   area,
+  type = "Service",
 }: {
   name: string;
   serviceType: string;
@@ -145,10 +154,12 @@ export function serviceSchema({
   path: string;
   /** Narrows the service to one place, for an /areas page. */
   area?: string;
+  /** "TaxiService" (a schema.org Service subtype) for taxi pages. */
+  type?: "Service" | "TaxiService";
 }): object {
   return {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": type,
     name,
     serviceType,
     description,

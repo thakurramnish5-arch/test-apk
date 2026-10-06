@@ -28,6 +28,35 @@ export interface ValidationOptions {
   requireToDate?: boolean;
   requirePickupTime?: boolean;
   requirePurpose?: boolean;
+  /**
+   * Minutes of slack before a pickup time today counts as past. The server
+   * allows some, since the form may sit open a while before it is sent.
+   */
+  pastTimeGraceMinutes?: number;
+}
+
+/**
+ * The current date (yyyy-mm-dd) and time (HH:mm) in India, whatever the
+ * device or server clock's zone — every trip starts in Chamba.
+ */
+export function nowInIndia(minutesAgo = 0): { date: string; time: string } {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    })
+      .formatToParts(new Date(Date.now() - minutesAgo * 60_000))
+      .map((part) => [part.type, part.value]),
+  );
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    time: `${parts.hour}:${parts.minute}`,
+  };
 }
 
 /**
@@ -86,6 +115,12 @@ export function validateEnquiry(
 
   if (options.requirePickupTime && !values.pickupTime) {
     errors.pickupTime = "Please choose a pickup time.";
+  } else if (values.pickupTime && values.fromDate) {
+    const now = nowInIndia(options.pastTimeGraceMinutes);
+    if (values.fromDate === now.date && values.pickupTime < now.time) {
+      errors.pickupTime =
+        "This time has already passed. Please choose a later time.";
+    }
   }
 
   if (values.fromDate && values.toDate && values.toDate < values.fromDate) {

@@ -231,6 +231,7 @@ export async function POST(request: Request) {
     requireFromDate: true,
     requirePickupTime: true,
     requireVehicleType: true,
+    pastTimeGraceMinutes: 30,
   });
   if (Object.keys(errors).length > 0) {
     return Response.json({ error: "Invalid details.", errors }, { status: 422 });

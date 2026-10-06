@@ -24,7 +24,11 @@ import {
 import { buildEnquiryWhatsAppUrl } from "@/lib/whatsapp";
 import { telHref } from "@/lib/whatsapp";
 import { cn, todayISO } from "@/lib/utils";
-import { validateEnquiry, type EnquiryErrors } from "@/lib/validation";
+import {
+  nowInIndia,
+  validateEnquiry,
+  type EnquiryErrors,
+} from "@/lib/validation";
 import type { BookingPurpose, EnquiryDetails, TripType } from "@/types";
 
 const purposeOptions: BookingPurpose[] = [
@@ -548,6 +552,8 @@ export function EnquiryForm({
     </Field>
   );
 
+  // On a trip for today, pickup times already gone are blocked.
+  const now = nowInIndia();
   const timeField = (
     <Field
       id={fieldId("pickupTime")}
@@ -562,6 +568,7 @@ export function EnquiryForm({
         id={fieldId("pickupTime")}
         name="pickupTime"
         type="time"
+        min={values.fromDate === now.date ? now.time : undefined}
         value={values.pickupTime}
         onChange={(e) => update("pickupTime", e.target.value)}
         className={cn("field-input", errors.pickupTime && "field-input-error")}

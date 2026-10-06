@@ -175,8 +175,7 @@ export function EnquiryForm({
     if (status === "submitting") return;
     const payload: EnquiryDetails = {
       ...values,
-      // The hero widget does not show these, so never send stale values.
-      ...(isCompact && { pickupTime: "" }),
+      // Hidden fields must never send stale values.
       ...(!asksPassengers && { passengers: "" }),
       ...(!isRoundTrip && { toDate: "" }),
       vehicleName,
@@ -797,15 +796,17 @@ export function EnquiryForm({
           {pickupField}
           {dropField}
           <div className="@[19rem]/form:col-span-2">{tripTypeField}</div>
+          {fromDateField}
+          {toDateField}
+          {/* Sits beside the date on a one-way trip, its own row on a round trip */}
           <div
             className={cn(
               "min-w-0",
-              !isRoundTrip && "@[19rem]/form:col-span-2",
+              isRoundTrip && "@[19rem]/form:col-span-2",
             )}
           >
-            {fromDateField}
+            {timeField}
           </div>
-          {toDateField}
         </div>
 
         <div className="mt-4 space-y-3">

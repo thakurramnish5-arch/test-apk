@@ -104,8 +104,26 @@ function buildEmail(d: EnquiryDetails) {
 
   const firstName = d.name.split(" ")[0];
   const tel = `tel:+91${d.phone}`;
+  const tripDetails = [
+    `🚗 Vehicle: ${vehicle}`,
+    `📍 Route: ${route}`,
+    d.fromDate && `📅 Date: ${formatDate(d.fromDate)}`,
+    d.pickupTime && `⏰ Pickup time: ${formatTime(d.pickupTime)}`,
+    d.passengers && `👥 Passengers: ${d.passengers}`,
+  ].filter(Boolean);
   const wa = `https://wa.me/91${d.phone}?text=${encodeURIComponent(
-    `Namaste ${firstName} ji, ${siteConfig.brand.name} se baat kar rahe hain. Aapki ${vehicle} ki enquiry (${route}) mili hai.`,
+    [
+      `Hello ${firstName} 🙏`,
+      `Welcome to ${siteConfig.brand.name}!`,
+      "",
+      "We have received your enquiry:",
+      ...tripDetails,
+      "",
+      "We will share the vehicle details and price with you shortly.",
+      "",
+      "Thank you,",
+      `Team ${siteConfig.brand.name}`,
+    ].join("\n"),
   )}`;
   const accent = isAdvance ? "#b45309" : "#1f5547";
   const summary = [

@@ -152,6 +152,8 @@ export function EnquiryForm({
   const errorId = (name: string) => `${uid}-${name}-error`;
 
   const asksPassengers = PASSENGER_VEHICLE_TYPES.includes(values.vehicleType);
+  // A one-way trip has no return, so only a round trip asks for a second date.
+  const isRoundTrip = values.tripType === "Round Trip";
 
   const update = (name: keyof EnquiryDetails, value: string) => {
     setValues((prev) => ({
@@ -176,6 +178,7 @@ export function EnquiryForm({
       // The hero widget does not show these, so never send stale values.
       ...(isCompact && { pickupTime: "" }),
       ...(!asksPassengers && { passengers: "" }),
+      ...(!isRoundTrip && { toDate: "" }),
       vehicleName,
       isAdvanceBooking: advanceBooking,
     };
@@ -523,10 +526,10 @@ export function EnquiryForm({
     </Field>
   );
 
-  const toDateField = (
+  const toDateField = isRoundTrip && (
     <Field
       id={fieldId("toDate")}
-      label={values.tripType === "Round Trip" ? "Return Date" : "To Date"}
+      label="Return Date"
       error={errors.toDate}
       errorId={errorId("toDate")}
     >
@@ -794,7 +797,14 @@ export function EnquiryForm({
           {pickupField}
           {dropField}
           <div className="@[19rem]/form:col-span-2">{tripTypeField}</div>
-          {fromDateField}
+          <div
+            className={cn(
+              "min-w-0",
+              !isRoundTrip && "@[19rem]/form:col-span-2",
+            )}
+          >
+            {fromDateField}
+          </div>
           {toDateField}
         </div>
 

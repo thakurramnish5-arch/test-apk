@@ -62,7 +62,7 @@ function tripRows(d: EnquiryDetails): [string, string][] {
     ["Drop", d.dropLocation],
     ["Trip", d.tripType],
     ["From date", formatDate(d.fromDate)],
-    [d.tripType === "Round Trip" ? "Return date" : "To date", formatDate(d.toDate)],
+    ["Return date", d.tripType === "Round Trip" ? formatDate(d.toDate) : ""],
     ["Pickup time", formatTime(d.pickupTime)],
     ["Purpose", d.purpose],
   ];
@@ -108,6 +108,9 @@ function buildEmail(d: EnquiryDetails) {
     `🚗 Vehicle: ${vehicle}`,
     `📍 Route: ${route}`,
     d.fromDate && `📅 Date: ${formatDate(d.fromDate)}`,
+    d.tripType === "Round Trip" &&
+      d.toDate &&
+      `🔁 Return date: ${formatDate(d.toDate)}`,
     d.pickupTime && `⏰ Pickup time: ${formatTime(d.pickupTime)}`,
     d.passengers && `👥 Passengers: ${d.passengers}`,
   ].filter(Boolean);

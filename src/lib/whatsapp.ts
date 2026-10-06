@@ -53,7 +53,8 @@ export function buildEnquiryMessage(details: EnquiryDetails): string {
     booking.push(`Drop: ${details.dropLocation.trim()}`);
   if (details.tripType) booking.push(`Trip: ${details.tripType}`);
   if (details.fromDate) booking.push(`From: ${formatDate(details.fromDate)}`);
-  if (details.toDate) booking.push(`To: ${formatDate(details.toDate)}`);
+  if (details.tripType === "Round Trip" && details.toDate)
+    booking.push(`Return: ${formatDate(details.toDate)}`);
   if (details.pickupTime)
     booking.push(`Time: ${formatTime(details.pickupTime)}`);
   if (details.passengers) booking.push(`Passengers: ${details.passengers}`);

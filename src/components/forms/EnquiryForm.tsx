@@ -192,6 +192,7 @@ export function EnquiryForm({
       requirePhone: true,
       requirePickup: true,
       requireFromDate: true,
+      requirePickupTime: true,
       // Every surface now shows the vehicle type field, so all of them
       // validate it.
       requireVehicleType: true,
@@ -551,7 +552,10 @@ export function EnquiryForm({
     <Field
       id={fieldId("pickupTime")}
       label="Pickup Time"
+      error={errors.pickupTime}
+      errorId={errorId("pickupTime")}
       icon={<Clock className="h-3.5 w-3.5" aria-hidden="true" />}
+      required
     >
       <PickerInput
         placeholder="Select time"
@@ -560,7 +564,12 @@ export function EnquiryForm({
         type="time"
         value={values.pickupTime}
         onChange={(e) => update("pickupTime", e.target.value)}
-        className="field-input"
+        className={cn("field-input", errors.pickupTime && "field-input-error")}
+        aria-invalid={!!errors.pickupTime}
+        aria-describedby={
+          errors.pickupTime ? errorId("pickupTime") : undefined
+        }
+        required
       />
     </Field>
   );

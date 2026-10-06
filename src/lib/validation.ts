@@ -26,6 +26,7 @@ export interface ValidationOptions {
   requireFromDate?: boolean;
   requireDrop?: boolean;
   requireToDate?: boolean;
+  requirePickupTime?: boolean;
   requirePurpose?: boolean;
 }
 
@@ -81,6 +82,10 @@ export function validateEnquiry(
 
   if (options.requireToDate && !values.toDate) {
     errors.toDate = "Please choose an end date.";
+  }
+
+  if (options.requirePickupTime && !values.pickupTime) {
+    errors.pickupTime = "Please choose a pickup time.";
   }
 
   if (values.fromDate && values.toDate && values.toDate < values.fromDate) {

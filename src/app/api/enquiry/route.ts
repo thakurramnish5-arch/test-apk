@@ -229,6 +229,7 @@ export async function POST(request: Request) {
     requirePhone: true,
     requirePickup: true,
     requireFromDate: true,
+    requirePickupTime: true,
     requireVehicleType: true,
   });
   if (Object.keys(errors).length > 0) {

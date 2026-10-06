@@ -34,7 +34,6 @@ yarn-error.log*
 .env*
 # .env holds public business details only and is committed
 !.env
-!.env.example
 
 # vercel
 .vercel

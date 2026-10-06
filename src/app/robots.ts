@@ -6,8 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // API endpoints and the hidden admin page; nothing to index.
-      disallow: ["/api/", "/admin/"],
+      // The enquiry endpoint only accepts form posts; nothing to index.
+      disallow: "/api/",
     },
     sitemap: `${siteConfig.url}/sitemap.xml`,
   };

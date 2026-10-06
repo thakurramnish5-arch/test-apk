@@ -1,9 +1,7 @@
-import { after } from "next/server";
 import nodemailer from "nodemailer";
 import { siteConfig } from "@/config/site";
 import { validateEnquiry } from "@/lib/validation";
 import { formatDate, formatTime } from "@/lib/whatsapp";
-import { sendEnquiryConfirmation } from "@/lib/whatsappCloud";
 import type { EnquiryDetails } from "@/types";
 
 export const runtime = "nodejs";
@@ -238,10 +236,6 @@ export async function POST(request: Request) {
     console.error("Enquiry email failed", error);
     return Response.json({ error: "Could not send." }, { status: 502 });
   }
-
-  // Confirm to the customer on WhatsApp once the team has the email. Runs
-  // after the response is sent and never throws, so it cannot affect it.
-  after(() => sendEnquiryConfirmation(enquiry.name, enquiry.phone));
 
   return Response.json({ ok: true });
 }

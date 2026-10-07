@@ -957,13 +957,20 @@ export function EnquiryForm({
           "@container/form bg-white",
           !bare &&
             "rounded-2xl border border-charcoal-200 p-4 shadow-xl sm:p-5",
+          isJcb &&
+            "flex max-h-[min(34rem,calc(100vh-5.5rem))] flex-col overflow-hidden sm:max-h-[min(32rem,calc(100vh-7rem))]",
           className,
         )}
         aria-label="Quick vehicle enquiry"
       >
         {/* A bare form sits inside a card that already has its own heading */}
         {!bare && (
-          <div className="mb-4 flex items-center justify-between gap-3">
+          <div
+            className={cn(
+              "mb-4 flex items-center justify-between gap-3",
+              isJcb && "shrink-0",
+            )}
+          >
             <div>
               <h2 className="flex items-center gap-2 font-display text-base font-bold text-charcoal-900">
                 <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
@@ -990,55 +997,62 @@ export function EnquiryForm({
           vehicle we look for. The rest is the journey and how to reach you.
         */}
         {honeypot}
-        {/* Small phones get one field per row; two columns once there's room */}
-        <div className="grid grid-cols-1 gap-3 @[19rem]/form:grid-cols-2">
-          {nameField}
-          {phoneField}
-          {/* Vehicle type spans the row unless passengers sits beside it */}
-          <div
-            className={cn(
-              "min-w-0",
-              !asksPassengers && "@[19rem]/form:col-span-2",
-            )}
-          >
-            {vehicleField}
-          </div>
-          {passengersField}
-          {isJcb ? (
-            <div className="min-w-0 @[19rem]/form:col-span-2">
-              <JcbEnquiryFields
-                compact
-                values={{
-                  ...jcbValues,
-                  name: values.name,
-                  phone: values.phone,
-                }}
-                errors={jcbErrors}
-                fieldId={fieldId}
-                errorId={errorId}
-                onChange={updateJcb}
-              />
-            </div>
-          ) : (
-            <>
-              {pickupField}
-              {dropField}
-              <div className="@[19rem]/form:col-span-2">{tripTypeField}</div>
-              {fromDateField}
-              {toDateField}
-              <div
-                className={cn(
-                  "min-w-0",
-                  isRoundTrip && "@[19rem]/form:col-span-2",
-                )}
-              >
-                {timeField}
-              </div>
-            </>
+        {/* JCB adds many fields — scroll inside the card so the hero stays put */}
+        <div
+          className={cn(
+            isJcb && "thin-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain",
           )}
+        >
+          {/* Small phones get one field per row; two columns once there's room */}
+          <div className="grid grid-cols-1 gap-3 @[19rem]/form:grid-cols-2">
+            {nameField}
+            {phoneField}
+            {/* Vehicle type spans the row unless passengers sits beside it */}
+            <div
+              className={cn(
+                "min-w-0",
+                !asksPassengers && "@[19rem]/form:col-span-2",
+              )}
+            >
+              {vehicleField}
+            </div>
+            {passengersField}
+            {isJcb ? (
+              <div className="min-w-0 @[19rem]/form:col-span-2">
+                <JcbEnquiryFields
+                  compact
+                  values={{
+                    ...jcbValues,
+                    name: values.name,
+                    phone: values.phone,
+                  }}
+                  errors={jcbErrors}
+                  fieldId={fieldId}
+                  errorId={errorId}
+                  onChange={updateJcb}
+                />
+              </div>
+            ) : (
+              <>
+                {pickupField}
+                {dropField}
+                <div className="@[19rem]/form:col-span-2">{tripTypeField}</div>
+                {fromDateField}
+                {toDateField}
+                <div
+                  className={cn(
+                    "min-w-0",
+                    isRoundTrip && "@[19rem]/form:col-span-2",
+                  )}
+                >
+                  {timeField}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="mt-4 space-y-3">
+        <div className={cn("space-y-3", isJcb ? "mt-3 shrink-0" : "mt-4")}>
           {errorSummary}
           {sendError}
           {actions}

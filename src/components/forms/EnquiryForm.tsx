@@ -371,6 +371,16 @@ export function EnquiryForm({
     setJcbErrors({});
   };
 
+  useEffect(() => {
+    if (initialVehicleType === "JCB") {
+      setJcbValues((prev) => ({
+        ...prev,
+        name: values.name,
+        phone: values.phone,
+      }));
+    }
+  }, [initialVehicleType, values.name, values.phone]);
+
   const activeJcb = submittedJcb;
   const activeTransport = submitted;
 
@@ -457,16 +467,6 @@ export function EnquiryForm({
     Object.keys(errors).length > 0 || Object.keys(jcbErrors).length > 0;
 
   // ------------------------------------------------------------ form fields
-  useEffect(() => {
-    if (initialVehicleType === "JCB") {
-      setJcbValues((prev) => ({
-        ...prev,
-        name: values.name,
-        phone: values.phone,
-      }));
-    }
-  }, [initialVehicleType]);
-
   const nameField = (
     <Field
       id={fieldId("name")}

@@ -958,7 +958,7 @@ export function EnquiryForm({
           !bare &&
             "rounded-2xl border border-charcoal-200 p-4 shadow-xl sm:p-5",
           isJcb &&
-            "flex max-h-[min(34rem,calc(100vh-5.5rem))] flex-col overflow-hidden sm:max-h-[min(32rem,calc(100vh-7rem))]",
+            "flex max-h-[min(38rem,calc(100vh-5.5rem))] flex-col overflow-hidden sm:max-h-[min(36rem,calc(100vh-7rem))]",
           className,
         )}
         aria-label="Quick vehicle enquiry"

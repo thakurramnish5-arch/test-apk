@@ -21,15 +21,27 @@ import {
   passengerVehicleTypeOptions,
   vehicleTypeOptions,
 } from "@/data/categories";
-import { buildEnquiryWhatsAppUrl } from "@/lib/whatsapp";
-import { telHref } from "@/lib/whatsapp";
+import {
+  buildEnquiryWhatsAppUrl,
+  buildJcbEnquiryWhatsAppUrl,
+  telHref,
+} from "@/lib/whatsapp";
 import { cn, todayISO } from "@/lib/utils";
 import {
   nowInIndia,
   validateEnquiry,
+  validateJcbEnquiry,
   type EnquiryErrors,
 } from "@/lib/validation";
-import type { BookingPurpose, EnquiryDetails, TripType } from "@/types";
+import type {
+  BookingPurpose,
+  EnquiryDetails,
+  JcbEnquiryDetails,
+  JcbEnquiryErrors,
+  TripType,
+} from "@/types";
+import { JcbEnquiryFields } from "@/components/forms/JcbEnquiryFields";
+import { PickerInput } from "@/components/forms/EnquiryFormParts";
 
 const purposeOptions: BookingPurpose[] = [
   "Tourism",
@@ -114,6 +126,23 @@ const emptyValues: EnquiryDetails = {
   message: "",
 };
 
+const emptyJcbValues: JcbEnquiryDetails = {
+  name: "",
+  phone: "",
+  vehicleType: "JCB",
+  machineType: "",
+  workLocation: "",
+  workType: "",
+  requiredDate: "",
+  startTime: "",
+  workingHours: "",
+  numberOfDays: "1",
+  operatorRequired: "Yes",
+  dieselOption: "Diesel Included",
+  siteAccess: "",
+  additionalDetails: "",
+};
+
 export function EnquiryForm({
   variant = "full",
   bare = false,
@@ -144,9 +173,14 @@ export function EnquiryForm({
     pickupLocation: defaultPickupLocation,
     dropLocation: defaultDropLocation,
   });
+  const [jcbValues, setJcbValues] = useState<JcbEnquiryDetails>(emptyJcbValues);
   const [errors, setErrors] = useState<EnquiryErrors>({});
+  const [jcbErrors, setJcbErrors] = useState<JcbEnquiryErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [submitted, setSubmitted] = useState<EnquiryDetails | null>(null);
+  const [submittedJcb, setSubmittedJcb] = useState<JcbEnquiryDetails | null>(
+    null,
+  );
   /** Set when the email could not be sent, so the visitor can use WhatsApp. */
   const [sendFailed, setSendFailed] = useState(false);
   /** Hidden honeypot field — only bots fill it in. */
@@ -155,19 +189,53 @@ export function EnquiryForm({
   const fieldId = (name: string) => `${uid}-${name}`;
   const errorId = (name: string) => `${uid}-${name}-error`;
 
-  const asksPassengers = PASSENGER_VEHICLE_TYPES.includes(values.vehicleType);
+  const isJcb = !passengerOnly && values.vehicleType === "JCB";
+  const asksPassengers =
+    !isJcb && PASSENGER_VEHICLE_TYPES.includes(values.vehicleType);
   // A one-way trip has no return, so only a round trip asks for a second date.
   const isRoundTrip = values.tripType === "Round Trip";
 
   const update = (name: keyof EnquiryDetails, value: string) => {
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-      // A car count is not a bus count, so switching type starts it fresh.
-      ...(name === "vehicleType" && { passengers: "" }),
-    }));
-    // Clear the error for a field as soon as the user corrects it
+    setValues((prev) => {
+      const next = {
+        ...prev,
+        [name]: value,
+        ...(name === "vehicleType" && { passengers: "" }),
+      };
+      if (name === "vehicleType" && value === "JCB") {
+        setJcbValues((jcb) => ({
+          ...jcb,
+          name: prev.name,
+          phone: prev.phone,
+        }));
+        setJcbErrors({});
+      }
+      if (name === "vehicleType" && value !== "JCB") {
+        setJcbValues(emptyJcbValues);
+        setJcbErrors({});
+      }
+      return next;
+    });
     setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  };
+
+  const updateJcb = (name: keyof JcbEnquiryDetails, value: string) => {
+    setJcbValues((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name === "workingHours" && value !== "Multiple Days") {
+        next.numberOfDays = "1";
+      }
+      if (name === "name" || name === "phone") {
+        setValues((v) => ({ ...v, [name]: value }));
+      }
+      return next;
+    });
+    setJcbErrors((prev) => {
       if (!prev[name]) return prev;
       const next = { ...prev };
       delete next[name];
@@ -177,6 +245,52 @@ export function EnquiryForm({
 
   const handleSubmit = async (advanceBooking: boolean) => {
     if (status === "submitting") return;
+
+    if (isJcb) {
+      const payload: JcbEnquiryDetails = {
+        ...jcbValues,
+        name: values.name,
+        phone: values.phone,
+        vehicleName,
+        isAdvanceBooking: advanceBooking,
+      };
+      const validationErrors = validateJcbEnquiry(payload);
+      if (Object.keys(validationErrors).length > 0) {
+        setJcbErrors(validationErrors);
+        setStatus("error");
+        const firstKey = Object.keys(validationErrors)[0];
+        document.getElementById(fieldId(firstKey))?.focus();
+        return;
+      }
+      setJcbErrors({});
+      setErrors({});
+      setSendFailed(false);
+      setStatus("submitting");
+      try {
+        const response = await fetch("/api/enquiry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...payload, website }),
+        });
+        if (!response.ok) throw new Error(`Enquiry failed: ${response.status}`);
+      } catch {
+        setSubmittedJcb(payload);
+        setSendFailed(true);
+        setStatus("idle");
+        return;
+      }
+      setSubmittedJcb(payload);
+      setStatus("success");
+      setValues({
+        ...emptyValues,
+        vehicleType: initialVehicleType,
+        pickupLocation: defaultPickupLocation,
+        dropLocation: defaultDropLocation,
+      });
+      setJcbValues(emptyJcbValues);
+      return;
+    }
+
     const payload: EnquiryDetails = {
       ...values,
       // Hidden fields must never send stale values.
@@ -248,26 +362,61 @@ export function EnquiryForm({
       pickupLocation: defaultPickupLocation,
       dropLocation: defaultDropLocation,
     });
+    setJcbValues(emptyJcbValues);
     setSubmitted(null);
+    setSubmittedJcb(null);
     setSendFailed(false);
     setStatus("idle");
     setErrors({});
+    setJcbErrors({});
   };
 
+  const activeJcb = submittedJcb;
+  const activeTransport = submitted;
+
   // ---------------------------------------------------------- success state
-  const successContent = submitted && (
+  const successContent = activeJcb ? (
     <div className="py-4 text-center" role="status" aria-live="polite">
       <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-forest-50 ring-8 ring-forest-50/50">
         <CheckCircle2 className="h-9 w-9 text-forest-600" aria-hidden="true" />
       </span>
       <h3 className="mt-5 font-display text-xl font-bold text-charcoal-900">
-        Thank you, {submitted.name.split(" ")[0]}!
+        Thank you, {activeJcb.name.split(" ")[0]}!
       </h3>
       <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-charcoal-600">
-        Your {submitted.isAdvanceBooking ? "advance booking" : "enquiry"} has
-        reached our team. A driver will call you shortly on{" "}
+        We have received your JCB requirement. Our team will contact you
+        shortly on{" "}
         <strong className="font-semibold text-charcoal-800">
-          +91 {submitted.phone}
+          +91 {activeJcb.phone}
+        </strong>{" "}
+        with availability and the hourly/day rate.
+      </p>
+      <p className="mt-3 text-xs text-charcoal-500">
+        Need it urgently? Call us right away.
+      </p>
+      <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
+        <Button onClick={resetForm} size="lg">
+          Done
+        </Button>
+        <LinkButton href={telHref} variant="outline" size="lg">
+          <Phone className="h-4 w-4" aria-hidden="true" />
+          Call Now
+        </LinkButton>
+      </div>
+    </div>
+  ) : activeTransport ? (
+    <div className="py-4 text-center" role="status" aria-live="polite">
+      <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-forest-50 ring-8 ring-forest-50/50">
+        <CheckCircle2 className="h-9 w-9 text-forest-600" aria-hidden="true" />
+      </span>
+      <h3 className="mt-5 font-display text-xl font-bold text-charcoal-900">
+        Thank you, {activeTransport.name.split(" ")[0]}!
+      </h3>
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-charcoal-600">
+        Your {activeTransport.isAdvanceBooking ? "advance booking" : "enquiry"}{" "}
+        has reached our team. A driver will call you shortly on{" "}
+        <strong className="font-semibold text-charcoal-800">
+          +91 {activeTransport.phone}
         </strong>{" "}
         with availability and the rate.
       </p>
@@ -285,7 +434,7 @@ export function EnquiryForm({
         </LinkButton>
       </div>
     </div>
-  );
+  ) : null;
 
   // Inside a dialog the confirmation replaces the form; everywhere else it
   // pops up over the page.
@@ -304,14 +453,25 @@ export function EnquiryForm({
   );
 
   const isSubmitting = status === "submitting";
-  const hasErrors = Object.keys(errors).length > 0;
+  const hasErrors =
+    Object.keys(errors).length > 0 || Object.keys(jcbErrors).length > 0;
 
   // ------------------------------------------------------------ form fields
+  useEffect(() => {
+    if (initialVehicleType === "JCB") {
+      setJcbValues((prev) => ({
+        ...prev,
+        name: values.name,
+        phone: values.phone,
+      }));
+    }
+  }, [initialVehicleType]);
+
   const nameField = (
     <Field
       id={fieldId("name")}
       label="Full Name"
-      error={errors.name}
+      error={errors.name || jcbErrors.name}
       errorId={errorId("name")}
       required
     >
@@ -320,12 +480,20 @@ export function EnquiryForm({
         name="name"
         type="text"
         autoComplete="name"
-        placeholder="Your full name"
+        placeholder={isJcb ? "Enter your full name" : "Your full name"}
         value={values.name}
-        onChange={(e) => update("name", e.target.value)}
-        className={cn("field-input", errors.name && "field-input-error")}
-        aria-invalid={!!errors.name}
-        aria-describedby={errors.name ? errorId("name") : undefined}
+        onChange={(e) => {
+          update("name", e.target.value);
+          if (isJcb) updateJcb("name", e.target.value);
+        }}
+        className={cn(
+          "field-input",
+          (errors.name || jcbErrors.name) && "field-input-error",
+        )}
+        aria-invalid={!!(errors.name || jcbErrors.name)}
+        aria-describedby={
+          errors.name || jcbErrors.name ? errorId("name") : undefined
+        }
         required
       />
     </Field>
@@ -335,7 +503,7 @@ export function EnquiryForm({
     <Field
       id={fieldId("phone")}
       label="Mobile Number"
-      error={errors.phone}
+      error={errors.phone || jcbErrors.phone}
       errorId={errorId("phone")}
       required
     >
@@ -372,13 +540,16 @@ export function EnquiryForm({
               return;
             }
             update("phone", phone);
+            if (isJcb) updateJcb("phone", phone);
           }}
           className={cn(
             "field-input pl-14",
-            errors.phone && "field-input-error",
+            (errors.phone || jcbErrors.phone) && "field-input-error",
           )}
-          aria-invalid={!!errors.phone}
-          aria-describedby={errors.phone ? errorId("phone") : undefined}
+          aria-invalid={!!(errors.phone || jcbErrors.phone)}
+          aria-describedby={
+            errors.phone || jcbErrors.phone ? errorId("phone") : undefined
+          }
           required
         />
       </div>
@@ -668,7 +839,7 @@ export function EnquiryForm({
     />
   );
 
-  const sendError = sendFailed && submitted && (
+  const sendError = sendFailed && (submitted || submittedJcb) && (
     <div
       className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-800"
       role="alert"
@@ -682,7 +853,11 @@ export function EnquiryForm({
       </p>
       <div className="mt-2.5 flex gap-2">
         <LinkButton
-          href={buildEnquiryWhatsAppUrl(submitted)}
+          href={
+            submittedJcb
+              ? buildJcbEnquiryWhatsAppUrl(submittedJcb)
+              : buildEnquiryWhatsAppUrl(submitted!)
+          }
           variant="whatsapp"
           size="sm"
           external
@@ -706,7 +881,10 @@ export function EnquiryForm({
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
       <span>
         Please correct the highlighted{" "}
-        {Object.keys(errors).length === 1 ? "field" : "fields"} and try again.
+        {Object.keys({ ...errors, ...jcbErrors }).length === 1
+          ? "field"
+          : "fields"}{" "}
+        and try again.
       </span>
     </div>
   );
@@ -729,10 +907,16 @@ export function EnquiryForm({
           <>
             <Send className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span className="truncate">
-              <span className="@[27rem]/form:hidden">Enquire Now</span>
-              <span className="hidden @[27rem]/form:inline">
-                Start an Enquiry
-              </span>
+              {isJcb ? (
+                "Enquire Now"
+              ) : (
+                <>
+                  <span className="@[27rem]/form:hidden">Enquire Now</span>
+                  <span className="hidden @[27rem]/form:inline">
+                    Start an Enquiry
+                  </span>
+                </>
+              )}
             </span>
           </>
         )}
@@ -747,8 +931,14 @@ export function EnquiryForm({
       >
         <CalendarCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
         <span className="truncate">
-          <span className="@[27rem]/form:hidden">Book Advance</span>
-          <span className="hidden @[27rem]/form:inline">Book in Advance</span>
+          {isJcb ? (
+            "Book JCB"
+          ) : (
+            <>
+              <span className="@[27rem]/form:hidden">Book Advance</span>
+              <span className="hidden @[27rem]/form:inline">Book in Advance</span>
+            </>
+          )}
         </span>
       </Button>
     </div>
@@ -780,11 +970,16 @@ export function EnquiryForm({
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-forest-500 opacity-75" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-forest-600" />
                 </span>
-                <RotatingHeadline />
+                {isJcb ? (
+                  "Book a JCB / Excavator"
+                ) : (
+                  <RotatingHeadline />
+                )}
               </h2>
               <p className="mt-0.5 text-xs text-charcoal-500">
-                Car, bus, truck, tractor or JCB — fill this in and a driver
-                calls you back with the rate.
+                {isJcb
+                  ? "Tell us about your work site and machine requirement. Our team will confirm availability and the rate."
+                  : "Car, bus, truck, tractor or JCB — fill this in and a driver calls you back with the rate."}
               </p>
             </div>
           </div>
@@ -809,20 +1004,38 @@ export function EnquiryForm({
             {vehicleField}
           </div>
           {passengersField}
-          {pickupField}
-          {dropField}
-          <div className="@[19rem]/form:col-span-2">{tripTypeField}</div>
-          {fromDateField}
-          {toDateField}
-          {/* Sits beside the date on a one-way trip, its own row on a round trip */}
-          <div
-            className={cn(
-              "min-w-0",
-              isRoundTrip && "@[19rem]/form:col-span-2",
-            )}
-          >
-            {timeField}
-          </div>
+          {isJcb ? (
+            <div className="min-w-0 @[19rem]/form:col-span-2">
+              <JcbEnquiryFields
+                compact
+                values={{
+                  ...jcbValues,
+                  name: values.name,
+                  phone: values.phone,
+                }}
+                errors={jcbErrors}
+                fieldId={fieldId}
+                errorId={errorId}
+                onChange={updateJcb}
+              />
+            </div>
+          ) : (
+            <>
+              {pickupField}
+              {dropField}
+              <div className="@[19rem]/form:col-span-2">{tripTypeField}</div>
+              {fromDateField}
+              {toDateField}
+              <div
+                className={cn(
+                  "min-w-0",
+                  isRoundTrip && "@[19rem]/form:col-span-2",
+                )}
+              >
+                {timeField}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="mt-4 space-y-3">
@@ -868,33 +1081,55 @@ export function EnquiryForm({
 
         <FormSection
           step="02"
-          title="Journey Information"
-          description="Where you are going and when."
+          title={isJcb ? "Work Site & Machine" : "Journey Information"}
+          description={
+            isJcb
+              ? "Where the work is and what machine you need."
+              : "Where you are going and when."
+          }
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <div className={cn(!asksPassengers && "sm:col-span-2")}>
               {vehicleField}
             </div>
             {passengersField}
-            {pickupField}
-            {dropField}
-            <div className="sm:col-span-2">{tripTypeField}</div>
-            {fromDateField}
-            {toDateField}
-            {timeField}
+            {isJcb ? (
+              <JcbEnquiryFields
+                values={{
+                  ...jcbValues,
+                  name: values.name,
+                  phone: values.phone,
+                }}
+                errors={jcbErrors}
+                fieldId={fieldId}
+                errorId={errorId}
+                onChange={updateJcb}
+              />
+            ) : (
+              <>
+                {pickupField}
+                {dropField}
+                <div className="sm:col-span-2">{tripTypeField}</div>
+                {fromDateField}
+                {toDateField}
+                {timeField}
+              </>
+            )}
           </div>
         </FormSection>
 
-        <FormSection
-          step="03"
-          title="Your Requirement"
-          description="Anything that helps us pick the right vehicle."
-        >
-          <div className="grid gap-4">
-            {purposeField}
-            {messageField}
-          </div>
-        </FormSection>
+        {!isJcb && (
+          <FormSection
+            step="03"
+            title="Your Requirement"
+            description="Anything that helps us pick the right vehicle."
+          >
+            <div className="grid gap-4">
+              {purposeField}
+              {messageField}
+            </div>
+          </FormSection>
+        )}
       </fieldset>
 
       <div className="mt-4 space-y-3">
@@ -902,8 +1137,9 @@ export function EnquiryForm({
         {sendError}
         {actions}
         <p className="text-center text-xs text-charcoal-500">
-          Your details go straight to our booking team and a driver calls you
-          back. No payment is taken at this stage.
+          {isJcb
+            ? "Your JCB requirement goes straight to our team — we confirm availability and rate before any booking."
+            : "Your details go straight to our booking team and a driver calls you back. No payment is taken at this stage."}
         </p>
       </div>
       {!isModal && successDialog}
@@ -987,31 +1223,6 @@ function FormSection({
  * box on phones. This draws the hint over the input until a value is picked
  * (or, on desktop, until it is focused for typing).
  */
-function PickerInput({
-  placeholder,
-  className,
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement> & { placeholder: string }) {
-  const empty = !props.value;
-  return (
-    <div className="relative">
-      <input
-        {...props}
-        data-empty={empty || undefined}
-        className={cn("peer", className)}
-      />
-      {empty && (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-base text-charcoal-400 peer-focus:hidden sm:text-sm"
-        >
-          {placeholder}
-        </span>
-      )}
-    </div>
-  );
-}
-
 function Field({
   id,
   label,

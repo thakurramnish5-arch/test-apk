@@ -102,6 +102,28 @@ export interface EnquiryDetails {
   isAdvanceBooking?: boolean;
 }
 
+/** Site-work enquiry when vehicle type is JCB (not passenger transport). */
+export interface JcbEnquiryDetails {
+  name: string;
+  phone: string;
+  vehicleType: "JCB";
+  machineType: string;
+  workLocation: string;
+  workType: string;
+  requiredDate: string;
+  startTime: string;
+  workingHours: string;
+  numberOfDays: string;
+  operatorRequired: "Yes" | "No";
+  dieselOption: "Diesel Included" | "Customer Will Provide Diesel";
+  siteAccess: string;
+  additionalDetails?: string;
+  vehicleName?: string;
+  isAdvanceBooking?: boolean;
+}
+
+export type JcbEnquiryErrors = Partial<Record<keyof JcbEnquiryDetails, string>>;
+
 /**
  * A landing page for one vehicle category, e.g. /taxi-car-booking.
  * Content must describe the real service — see src/data/categoryPages.ts.

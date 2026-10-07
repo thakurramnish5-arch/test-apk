@@ -1,5 +1,5 @@
 import { siteConfig } from "@/config/site";
-import type { EnquiryDetails } from "@/types";
+import type { EnquiryDetails, JcbEnquiryDetails } from "@/types";
 
 /** Formats an ISO date (yyyy-mm-dd) as "12 Oct 2026". Falls back to raw input. */
 export function formatDate(value?: string): string {
@@ -85,6 +85,46 @@ export function buildWhatsAppUrl(message: string): string {
 /** Convenience: enquiry object straight to a ready-to-open WhatsApp URL. */
 export function buildEnquiryWhatsAppUrl(details: EnquiryDetails): string {
   return buildWhatsAppUrl(buildEnquiryMessage(details));
+}
+
+export function buildJcbEnquiryMessage(details: JcbEnquiryDetails): string {
+  const heading = details.isAdvanceBooking
+    ? "*JCB Advance Booking*"
+    : "*New JCB / Excavator Enquiry*";
+
+  const lines: string[] = [
+    heading,
+    "",
+    "*Customer Details*",
+    `Name: ${details.name.trim()}`,
+    `Phone: +91 ${details.phone.trim()}`,
+    "",
+    "*Work & Machine*",
+    `Machine: ${details.machineType}`,
+    `Work location: ${details.workLocation.trim()}`,
+    `Work type: ${details.workType}`,
+    `Date: ${formatDate(details.requiredDate)}`,
+    `Start time: ${formatTime(details.startTime)}`,
+    `Working hours: ${details.workingHours}${
+      details.workingHours === "Multiple Days"
+        ? ` (${details.numberOfDays} days)`
+        : ""
+    }`,
+    `Operator: ${details.operatorRequired}`,
+    `Diesel: ${details.dieselOption}`,
+    `Site access: ${details.siteAccess}`,
+  ];
+
+  if (details.additionalDetails?.trim()) {
+    lines.push("", "*Additional Details*", details.additionalDetails.trim());
+  }
+
+  lines.push("", "Please share availability and quotation.");
+  return lines.join("\n");
+}
+
+export function buildJcbEnquiryWhatsAppUrl(details: JcbEnquiryDetails): string {
+  return buildWhatsAppUrl(buildJcbEnquiryMessage(details));
 }
 
 /** WhatsApp URL for a general (non-form) enquiry. */

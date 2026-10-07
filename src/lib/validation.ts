@@ -1,4 +1,4 @@
-import type { EnquiryDetails } from "@/types";
+import type { EnquiryDetails, JcbEnquiryDetails, JcbEnquiryErrors } from "@/types";
 
 export type EnquiryErrors = Partial<Record<keyof EnquiryDetails, string>>;
 
@@ -142,6 +142,80 @@ export function validateEnquiry(
           ? "A car seats up to 9. For more people, choose Bus."
           : `Enter up to ${max} passengers.`;
     }
+  }
+
+  return errors;
+}
+
+export function validateJcbEnquiry(
+  values: JcbEnquiryDetails,
+  options: { pastTimeGraceMinutes?: number } = {},
+): JcbEnquiryErrors {
+  const errors: JcbEnquiryErrors = {};
+
+  if (!values.name.trim()) {
+    errors.name = "Please enter your name.";
+  } else if (values.name.trim().length < 2) {
+    errors.name = "Please enter your full name.";
+  }
+
+  if (!values.phone.trim()) {
+    errors.phone = "Please enter your mobile number.";
+  } else if (!isValidIndianPhone(values.phone)) {
+    errors.phone = isTenDigits(values.phone)
+      ? "Indian mobile numbers start with 6, 7, 8 or 9."
+      : "Enter a valid 10-digit Indian mobile number.";
+  }
+
+  if (!values.machineType) {
+    errors.machineType = "Please select the machine type.";
+  }
+
+  if (!values.workLocation.trim()) {
+    errors.workLocation = "Please enter the work location.";
+  }
+
+  if (!values.workType) {
+    errors.workType = "Please select the type of work.";
+  }
+
+  if (!values.requiredDate) {
+    errors.requiredDate = "Please choose the required date.";
+  }
+
+  if (!values.workingHours) {
+    errors.workingHours = "Please select expected working hours.";
+  }
+
+  if (values.workingHours === "Multiple Days") {
+    const days = Number(values.numberOfDays);
+    if (!values.numberOfDays.trim() || !/^\d+$/.test(values.numberOfDays) || days < 1) {
+      errors.numberOfDays = "Enter how many days you need the machine.";
+    } else if (days > 90) {
+      errors.numberOfDays = "For long hires, call us to discuss.";
+    }
+  }
+
+  if (!values.startTime) {
+    errors.startTime = "Please choose a start time.";
+  } else if (values.requiredDate) {
+    const now = nowInIndia(options.pastTimeGraceMinutes);
+    if (values.requiredDate === now.date && values.startTime < now.time) {
+      errors.startTime =
+        "This time has already passed. Please choose a later time.";
+    }
+  }
+
+  if (!values.operatorRequired) {
+    errors.operatorRequired = "Please select whether an operator is required.";
+  }
+
+  if (!values.dieselOption) {
+    errors.dieselOption = "Please select a diesel option.";
+  }
+
+  if (!values.siteAccess) {
+    errors.siteAccess = "Please select site access / road condition.";
   }
 
   return errors;
